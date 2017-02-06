@@ -23,3 +23,5 @@ docker create --name=${name} \
  -p ${ui_port}:${ui_port} -p ${download_port}:${download_port} \
  -p ${download_port}:${download_port}/udp \
  linuxserver/transmission
+
+# Adapted from http://www.htpcbeginner.com/install-transmission-using-docker/
