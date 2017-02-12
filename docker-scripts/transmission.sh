@@ -9,6 +9,7 @@ config_location="/home/docker/transmission/config"	# Location of config files
 download_location="/home/docker/transmission/downloads"	# Location to download into
 watch_location="/home/docker/transmission/downloads"	# Location of watch directory
 UserID="1001"			# User ID
+GroupID="1002"			# Group ID
 time_zone="Africa/Johannesburg"	# Time zone
 download_port="51413"		# Download port
 ui_port="9091"			# User Interface Port
@@ -18,7 +19,7 @@ docker create --name=${name} \
  -v ${config_location}:/config \
  -v ${download_location}:/downloads \
  -v ${watch_location}:/watch \
- -e PGID=${UserID} -e PUID=${UserID} \
+ -e PGID=${GroupID} -e PUID=${UserID} \
  -e TZ=${time_zone} \
  -p ${ui_port}:${ui_port} -p ${download_port}:${download_port} \
  -p ${download_port}:${download_port}/udp \
