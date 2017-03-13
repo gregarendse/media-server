@@ -1,0 +1,128 @@
+---
+version: '3'
+services:
+
+# Adapted from: https://hub.docker.com/r/linuxserver/transmission/
+  transmission:
+    image: linuxserver/transmission
+    container_name: transmission
+    restart: always
+    volumes:
+      - /home/docker/transmission/config:/config
+      - /home/greg/downloads:/downloads
+      - /home/docker/transmission/watch:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+
+  deluge:
+    image: linuxserver/deluge
+    container_name: deluge
+    restart: always
+    volumes:
+      - /home/greg/downloads:/downloads
+      - /home/docker/deluge/config:/config
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    network_mode: "host"
+      
+
+# Adapted from: https://hub.docker.com/r/linuxserver/sabnzbd/
+  sabnzbd:
+    image: linuxserver/sabnzbd
+    container_name: sabnzbd
+    restart: always
+    volumes:
+      - /home/docker/sabnzbd/config:/config
+      - /home/greg/downloads:/downloads
+      - /home/docker/sabnzbd/downloads/incomplete:/incomplete-downloads
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    ports:
+      - 8585:8080
+      - 9595:9090
+
+# Adapted from: https://hub.docker.com/r/linuxserver/jackett/
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    restart: always
+    volumes:
+      - /home/greg/config/jackett:/config
+      - /home/greg/downloads/queue:/downloads
+    ports:
+      - 9117:9117
+    restart: always
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+
+# Adapted from: https://hub.docker.com/r/linuxserver/sonarr/
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    depends_on:
+      - sabnzbd
+      - transmission
+      - jackett
+    volumes:
+      - /dev/rtc:/dev/rtc:ro
+      - /home/docker/sonarr/config:/config
+      - /home/greg/downloads:/downloads
+      - /home/greg/blackhole:/blackhole
+      - /red/TV Shows:/media/red_one/TV Shows
+    ports:
+      - 8989:8989
+    restart: always
+    environment:
+      - PUID=1001
+      - PGID=1001
+    links:
+      - deluge
+
+# Adapted from: https://hub.docker.com/r/linuxserver/radarr/
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    depends_on:
+      - sabnzbd
+      - transmission
+      - jackett
+    volumes:
+      - /home/docker/radarr/config:/config
+      - /home/greg/downloads:/downloads
+      - /red/Movies:/movies
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    restart: always
+    ports:
+      - 7878:7878
+    links:
+      - deluge
+
+  emby:
+    image: emby/embyserver
+    container_name: emby-server
+    restart: always
+    ports:
+      - 8096:8096
+    volumes:
+      - /home/docker/emby/config:/config
+      - /red:/red
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+
