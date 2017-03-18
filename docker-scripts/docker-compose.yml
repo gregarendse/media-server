@@ -71,10 +71,6 @@ services:
   sonarr:
     image: linuxserver/sonarr
     container_name: sonarr
-    depends_on:
-      - sabnzbd
-      - transmission
-      - jackett
     volumes:
       - /dev/rtc:/dev/rtc:ro
       - /home/docker/sonarr/config:/config
@@ -89,15 +85,16 @@ services:
       - PGID=1001
     links:
       - deluge
+      - sabnzbd
+      - transmission
+      - jackett
+      - emby
+
 
 # Adapted from: https://hub.docker.com/r/linuxserver/radarr/
   radarr:
     image: linuxserver/radarr
     container_name: radarr
-    depends_on:
-      - sabnzbd
-      - transmission
-      - jackett
     volumes:
       - /home/docker/radarr/config:/config
       - /home/greg/downloads:/downloads
@@ -110,19 +107,9 @@ services:
     ports:
       - 7878:7878
     links:
+      - sabnzbd
+      - transmission
+      - jackett
       - deluge
-
-  emby:
-    image: emby/embyserver
-    container_name: emby-server
-    restart: always
-    ports:
-      - 8096:8096
-    volumes:
-      - /home/docker/emby/config:/config
-      - /red:/red
-    environment:
-      - PUID=1001
-      - PGID=1001
-      - TZ="Africa/Johannaesburg"
+      - emby
 
