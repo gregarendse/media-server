@@ -88,7 +88,6 @@ services:
       - sabnzbd
       - transmission
       - jackett
-      - emby
 
 
 # Adapted from: https://hub.docker.com/r/linuxserver/radarr/
@@ -111,5 +110,4 @@ services:
       - transmission
       - jackett
       - deluge
-      - emby
 
