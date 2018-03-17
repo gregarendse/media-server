@@ -74,6 +74,7 @@ services:
     volumes:
       - /dev/rtc:/dev/rtc:ro
       - /home/docker/sonarr/config:/config
+      - /home/docker/sonarr/scripts:/scripts
       - /home/greg/downloads:/downloads
       - /home/greg/blackhole:/blackhole
       - /red/TV Shows:/media/red_one/TV Shows
