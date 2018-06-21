@@ -2,24 +2,6 @@
 version: '3'
 services:
 
-# Adapted from: https://hub.docker.com/r/linuxserver/transmission/
-  transmission:
-    image: linuxserver/transmission
-    container_name: transmission
-    restart: always
-    volumes:
-      - /home/docker/transmission/config:/config
-      - /home/greg/downloads:/downloads
-      - /home/docker/transmission/watch:/watch
-    ports:
-      - 9091:9091
-      - 51413:51413
-      - 51413:51413/udp
-    environment:
-      - PUID=1001
-      - PGID=1001
-      - TZ="Africa/Johannaesburg"
-
   deluge:
     image: linuxserver/deluge
     container_name: deluge
@@ -27,6 +9,7 @@ services:
     volumes:
       - /home/greg/downloads:/downloads
       - /home/docker/deluge/config:/config
+      - /home/greg/blackhole:/blackhole
     environment:
       - PUID=1001
       - PGID=1001
@@ -87,7 +70,6 @@ services:
     links:
       - deluge
       - sabnzbd
-      - transmission
       - jackett
 
 
@@ -108,7 +90,25 @@ services:
       - 7878:7878
     links:
       - sabnzbd
-      - transmission
       - jackett
       - deluge
+
+# Adapted from: https://hub.docker.com/r/linuxserver/radarr/
+  requests:
+    image: linuxserver/plexrequests
+    container_name: plexrequests
+    volumes:
+      - /home/docker/plexrequests/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+      - URL_BASE=/requests
+    restart: always
+    ports:
+      - 3000:3000
+    links:
+      - radarr
+      - sonarr
 
