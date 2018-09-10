@@ -71,6 +71,8 @@ services:
       - deluge
       - sabnzbd
       - jackett
+      - cardigann
+      - nzbhydra
 
 
 # Adapted from: https://hub.docker.com/r/linuxserver/radarr/
@@ -80,6 +82,7 @@ services:
     volumes:
       - /home/docker/radarr/config:/config
       - /home/greg/downloads:/downloads
+      - /home/greg/blackhole:/blackhole
       - /red/Movies:/movies
     environment:
       - PUID=1001
@@ -92,6 +95,8 @@ services:
       - sabnzbd
       - jackett
       - deluge
+      - cardigann
+      - nzbhydra
 
 # Adapted from: https://hub.docker.com/r/linuxserver/radarr/
   requests:
@@ -111,4 +116,42 @@ services:
     links:
       - radarr
       - sonarr
+
+  ombi:
+    image: linuxserver/ombi
+    container_name: ombi
+    volumes:
+      - /home/docker/ombi/config:/config
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    ports:
+      - 3579:3579
+    links:
+      - radarr
+      - sonarr
+
+
+  cardigann:
+      image: linuxserver/cardigann
+      container_name: cardigann
+      volumes:
+          - /home/docker/cardigann/config:/config
+      environment:
+          - PUID=1001
+          - PGID=1001
+      ports:
+          - 5060:5060
+  nzbhydra:
+      image: linuxserver/hydra2
+      container_name: nzbhydra
+      volumes:
+          - /home/docker/nzbhydra/config:/config
+      environment:
+          - PUID=1001
+          - GUID=1001
+          - TZ="Africa/Johannaesburg"
+      ports:
+          - 5076:5076
 

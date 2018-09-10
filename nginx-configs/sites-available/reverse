@@ -51,7 +51,7 @@ server {
   }
 
   location /plex {
-    proxy_pass http://127.0.0.1/web;   
+    proxy_pass http://arendse.tk/web;   
   }
 
   location /unifi {
@@ -73,4 +73,49 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 
+  location /nzbhydra {
+    auth_basic              "Administrator's Area";
+    auth_basic_user_file    /etc/apache2/.htpasswd;
+
+	proxy_pass	http://127.0.0.1:5076;
+	proxy_set_header	X-Real-IP	$remote_addr;
+	proxy_set_header	Host		$host;
+	proxy_set_header	Scheme		$scheme;
+	proxy_set_header	X-Forwarded-For	$proxy_add_x_forwarded_for;
+	proxy_set_header	X-Forwarded-Proto	$scheme;
+	proxy_set_header	X-Forwarded-Host	$host;
+	proxy_redirect off;
+  }
+
+  location /cardigann/ {
+    auth_basic              "Administrator's Area";
+    auth_basic_user_file    /etc/apache2/.htpasswd;
+    
+    rewrite /cardigann/(.*) /$1 break;
+
+    sub_filter '<link href="./static/css/main.' '<link href="$scheme://$host/cardigann/static/css/main.';
+    sub_filter '<script type="text/javascript" src="./static/js/main.' '<script type="text/javascript" src="$scheme://$host/cardigann/static/js/main.';
+    sub_filter_once off;
+
+    proxy_pass	http://127.0.0.1:5060;
+    proxy_redirect off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+  location /jackett {
+    auth_basic              "Administrator's Area";
+    auth_basic_user_file    /etc/apache2/.htpasswd;
+
+	proxy_pass	http://127.0.0.1:9117;
+	proxy_set_header	X-Real-IP	$remote_addr;
+	proxy_set_header	Host		$host;
+	proxy_set_header	Scheme		$scheme;
+	proxy_set_header	X-Forwarded-For	$proxy_add_x_forwarded_for;
+	proxy_set_header	X-Forwarded-Proto	$scheme;
+	proxy_set_header	X-Forwarded-Host	$host;
+	proxy_redirect off;
+    add_header X-uri "$uri";
+  }
 }
