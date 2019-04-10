@@ -2,6 +2,16 @@
 version: '3'
 services:
 
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    ports: 
+      - 9000:9000
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/docker/portainer/data:/data
+
   deluge:
     image: linuxserver/deluge
     container_name: deluge
