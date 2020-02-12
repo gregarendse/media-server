@@ -1,0 +1,13 @@
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+#   API keys
+*key*.yaml
+
+#   Compressed folders
+*.tar.gz
+

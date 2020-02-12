@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+  labels:
+    apps: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      apps: pihole
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        apps: pihole
+    spec:
+      containers:
+      - env:
+        - name: DNS1
+          value: 1.1.1.1
+        - name: DNS2
+          value: 8.8.8.8
+        - name: PROXY_LOCATION
+          value: pihole
+        - name: ServerIP
+          value: 192.168.1.20
+        - name: TZ
+          value: Africa/Johannaesburg
+        - name: VIRTUAL_HOST
+          value: pihole.arendse.xyz
+        - name: VIRTUAL_PORT
+          value: "80"
+        - name: WEBPASSWORD
+          value: Cc4lRRCa4miFnOT@@f28IX03YPR#p3lH
+        image: pihole/pihole
+        name: pihole
+        ports:
+        - containerPort: 53
+        - containerPort: 53
+          protocol: UDP
+        - containerPort: 67
+          protocol: UDP
+        - containerPort: 80
+        - containerPort: 443
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        volumeMounts:
+        - mountPath: /etc/pihole/
+          name: pihole
+        - mountPath: /etc/dnsmasq.d/
+          name: dnsmasq
+      restartPolicy: Always
+      volumes:
+      - name: pihole
+        hostPath:
+          type: Directory
+          path: /home/docker/pihole/
+      - name: dnsmasq
+        hostPath:
+          type: Directory
+          path: /home/docker/pihole/dnsmasq.d/
+status: {}

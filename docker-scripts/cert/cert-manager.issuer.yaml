@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1alpha2 
+kind: Issuer 
+metadata: 
+  name: example-issuer
+spec:
+  acme: 
+    server: https://acme-staging-v02.api.letsencrypt.org/directory 
+    privateKeySecretRef: 
+      name: letsencrypt-prod-key
+    solvers: 
+    - http01: 
+      ingress: 
+        class: nginx
+

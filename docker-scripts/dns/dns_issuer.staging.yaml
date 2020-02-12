@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: letsencrypt-staging
+  namespace: default
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: greg.arendse@gmail.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    # ACME DNS-01 provider configurations
+    solvers:
+    - dns01:
+        cloudflare:
+          email: greg.arendse@gmail.com
+          apiKeySecretRef:
+            name: cloudflare-api-key
+            key: api-key.txt
+

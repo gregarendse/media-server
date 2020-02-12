@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sabnzbd
+  name: sabnzbd
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: sabnzbd
+    spec:
+      containers:
+      - env:
+        - name: PGID
+          value: "1001"
+        - name: PUID
+          value: "1001"
+        - name: TZ
+          value: '"Africa/Johannaesburg"'
+        image: linuxserver/sabnzbd
+        name: sabnzbd
+        ports:
+        - containerPort: 8080
+        - containerPort: 9090
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: sabnzbd-claim0
+        - mountPath: /incomplete-downloads
+          name: sabnzbd-claim1
+        - mountPath: /downloads
+          name: downloads
+      restartPolicy: Always
+      volumes:
+      - name: sabnzbd-claim0
+        persistentVolumeClaim:
+          claimName: sabnzbd-claim0
+      - name: sabnzbd-claim1
+        persistentVolumeClaim:
+          claimName: sabnzbd-claim1
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: downloads
+status: {}

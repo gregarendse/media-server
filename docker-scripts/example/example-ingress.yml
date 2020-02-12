@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-staging"
+spec:
+  tls:
+  - hosts:
+    - www.arendse.xyz
+    secretName: letsencrypt-staging
+  rules:
+  - host: www.arendse.xyz 
+    http:
+      paths:
+      - path: /sonarr
+        backend:
+          serviceName: sonarr
+          servicePort: 8989
+      - path: /radarr
+        backend:
+          serviceName: radarr
+          servicePort: 7878
+

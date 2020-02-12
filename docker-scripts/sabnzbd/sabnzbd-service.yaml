@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sabnzbd
+  name: sabnzbd
+spec:
+  ports:
+  - name: "8585"
+    port: 8585
+    targetPort: 8080
+  - name: "9595"
+    port: 9595
+    targetPort: 9090
+  selector:
+    io.kompose.service: sabnzbd
+status:
+  loadBalancer: {}
