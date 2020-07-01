@@ -1,0 +1,226 @@
+---
+version: '3'
+
+networks:
+  internal:
+    external: false
+    #name: internal
+    driver: bridge
+  host:
+    external: true
+    #name: host
+
+volumes:
+  downloads:
+    driver: local
+    driver_opts:
+      device: /red/downloads
+      o: bind
+      type: none
+
+  blackhole:
+    driver: local
+    driver_opts:
+      device: /red/blackhole
+      o: bind
+      type: none
+
+services:
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker:plexpass
+    network_mode: host
+    environment:
+      - PLEX_UID=1001
+      - PLEX_GID=1001
+      - TZ="Africa/Johannaesburg"
+      - ALLOWED_NETWORKS=192.168.0.0/16,172.16.0.0/12,10.0.0.0/18
+    volumes:
+      - /red:/red
+      - /home/docker/plex/config:/config
+      - /home/docker/plex/transcode:/transcode
+    devices:
+      - /dev/dri/card0:/dev/dri/card0
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    privileged: true
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    networks:
+      - internal
+    ports: 
+      - 9000:9000
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/docker/portainer/data:/data
+    restart: unless-stopped
+
+# Adapted from: https://hub.docker.com/r/linuxserver/sabnzbd/
+  sabnzbd:
+    image: linuxserver/sabnzbd
+    container_name: sabnzbd
+    networks:
+      - internal
+    volumes:
+      - /home/docker/sabnzbd/config:/config
+      - /home/docker/sabnzbd/downloads/incomplete:/incomplete-downloads
+      - downloads:/downloads
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    ports:
+      - 8585:8080
+      - 9595:9090
+    restart: unless-stopped
+
+# Adapted from: https://hub.docker.com/r/linuxserver/jackett/
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    networks:
+      - internal
+    volumes:
+      - /home/docker/jackett/config/jackett:/config
+      - /home/docker/jackett/downloads:/downloads
+    ports:
+      - 9117:9117
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    restart: unless-stopped
+
+# Adapted from: https://hub.docker.com/r/linuxserver/sonarr/
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    volumes:
+      - /dev/rtc:/dev/rtc:ro
+      - /home/docker/sonarr/config:/config
+      - /home/docker/sonarr/scripts:/scripts
+      - downloads:/downloads
+      - blackhole:/blackhole
+      - /red/TV Shows:/media/red_one/TV Shows
+      - /red/downloads:/red/downloads
+    networks:
+      - internal
+    ports:
+      - 8989:8989
+    environment:
+      - PUID=1001
+      - PGID=1001
+    restart: unless-stopped
+
+# Adapted from: https://hub.docker.com/r/linuxserver/radarr/
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    volumes:
+      - /dev/rtc:/dev/rtc:ro
+      - /home/docker/radarr/config:/config
+      - downloads:/downloads
+      - blackhole:/blackhole
+      - /red/Movies:/movies
+      - /red/downloads:/red/downloads
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    networks:
+      - internal
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  ombi:
+    image: linuxserver/ombi
+    container_name: ombi
+    volumes:
+      - /home/docker/ombi/config:/config
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    networks:
+      - internal
+    ports:
+      - 3579:3579
+    restart: unless-stopped
+
+  cardigann:
+    image: linuxserver/cardigann
+    container_name: cardigann
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    volumes:
+      - /home/docker/cardigann/config:/config
+    networks:
+      - internal
+    ports:
+      - 5060:5060
+    restart: unless-stopped
+
+  tautulli:
+    image: linuxserver/tautulli
+    container_name: tautulli
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ="Africa/Johannaesburg"
+    volumes:
+      - /home/docker/tautulli/config:/config
+      - /home/docker/tautulli/logs:/logs
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - internal
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+
+  htpcmanager:
+    image: linuxserver/htpcmanager
+    container_name: htpcmanager
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=Etc/UTC
+    volumes:
+      - /home/docker/htpcmanager/config:/config
+    networks:
+      - internal
+    ports:
+      - 8085:8085
+    restart: unless-stopped
+
+  pihole:
+    image: pihole/pihole
+    container_name: pihole
+    environment:
+      ServerIP: 192.168.1.6
+      TZ: "Africa/Johannaesburg"
+      WEBPASSWORD: Cc4lRRCa4miFnOT@@f28IX03YPR#p3lH
+      VIRTUAL_HOST: pihole.arendse.ga
+      VIRTUAL_PORT: 80
+      PROXY_LOCATION: pihole
+      DNS1: 1.1.1.1
+      DNS2: 8.8.8.8
+    volumes:
+      - /home/docker/pihole/:/etc/pihole/
+      - /home/docker/pihole/dnsmasq.d/:/etc/dnsmasq.d/
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "8008:80/tcp"
+      - "44344:443/tcp"
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+

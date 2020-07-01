@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jackett
+  namespace: media
+  labels:
+    app: jackett
+spec:
+  selector:
+    matchLabels:
+      app: jackett
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jackett
+    spec:
+      containers:
+      - name: jackett
+        image: linuxserver/jackett
+        env:
+        - name: PGID
+          value: "1001"
+        - name: PUID
+          value: "1001"
+        - name: TZ
+          value: '"Africa/Johannaesburg"'
+        ports:
+        - containerPort: 9117
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /downloads
+          name: downloads
+      volumes:
+      - name: config
+        hostPath:
+          path: /home/docker/jackett/config/jackett
+      - name: downloads
+        hostPath:
+          path: /home/docker/jackett/downloads
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jackett
+  name: jackett
+  namespace: media
+spec:
+  ports:
+  - protocol: TCP
+    port: 9117
+    targetPort: 9117
+  selector:
+    app: jackett
+

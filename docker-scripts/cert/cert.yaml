@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: arendse.xyz
+  namespace: media
+spec:
+  secretName: arendse.xyz-tls
+  issuerRef:
+    name: letsencrypt-staging
+  commonName: arendse.xyz
+  dnsNames:
+  - arendse.xyz
+  - www.arendse.xyz
+  - echo.arendse.xyz
+
