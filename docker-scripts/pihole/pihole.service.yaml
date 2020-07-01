@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 ---
+=======
+>>>>>>> master
 apiVersion: v1
 kind: Service
 metadata:
   name: pihole
+<<<<<<< HEAD
   namespace: pihole 
 spec:
   selector:
@@ -24,3 +28,30 @@ spec:
     protocol: UDP
     port: 67
     targetPort: 67
+=======
+  namespace: pihole
+spec:
+  selector:
+    apps: pihole
+  ports:
+  - name: "53-tcp"
+    protocol: TCP
+    port: 53
+    targetPort: 53
+  - name: "53-udp"
+    protocol: UDP
+    port: 53
+    targetPort: 53
+  - name: "67-udp"
+    protocol: UDP
+    port: 67
+    targetPort: 67
+  - name: "80-tcp"
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: "443-tcp"
+    protocol: TCP
+    port: 443
+    targetPort: 443
+>>>>>>> master
