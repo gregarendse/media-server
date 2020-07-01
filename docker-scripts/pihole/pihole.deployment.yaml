@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+  labels:
+    app: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+        - name: pihole
+          image: pihole/pihole:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 53
+              name: dns
+              protocol: TCP
+            - containerPort: 53
+              name: dns-udp
+              protocol: UDP
+            - containerPort: 67
+              name: client-udp
+              protocol: UDP
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Africa/Johannaesburg
+            - name: VIRTUAL_HOST
+              value: pihole.arendse.xyz
+            - name: DNS1
+              value: 1.1.1.1
+            - name: DNS2
+              value: 1.0.0.1
+            - name: WEBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: pihole-password
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/pihole/
+              name: pihole
+            - mountPath: /etc/dnsmasq.d/
+              name: dnsmasq
+      restartPolicy: Always
+      volumes:
+        - name: pihole
+          hostPath:
+            type: Directory
+            path: /home/docker/pihole/
+        - name: dnsmasq
+          hostPath:
+            type: Directory
+            path: /home/docker/pihole/dnsmasq.d/
