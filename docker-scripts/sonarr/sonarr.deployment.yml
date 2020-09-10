@@ -27,10 +27,11 @@ spec:
           value: "1001"
         ports:
         - containerPort: 8989
+        resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
         volumeMounts:
-        - mountPath: /dev/rtc
-          name: rtc
-          readOnly: true
         - mountPath: /config
           name: config
         - mountPath: /scripts
@@ -44,10 +45,6 @@ spec:
         - mountPath: /red/downloads
           name: downloads
       volumes:
-      - name: rtc
-        hostPath:
-          type: File
-          path: /dev/rtc
       - name: config
         hostPath:
           type: Directory
