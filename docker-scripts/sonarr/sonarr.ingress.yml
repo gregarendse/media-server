@@ -10,17 +10,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - www.arendse.xyz
-        - sonarr.arendse.xyz
+        - 6f3806410f7b.sn.mynetname.net
       secretName: sonarr-secret
   rules:
-    - host: sonarr.arendse.xyz
-      http:
-        paths:
-          - backend:
-              serviceName: sonarr
-              servicePort: 8989
-    - host: www.arendse.xyz
+    - host: 6f3806410f7b.sn.mynetname.net
       http:
         paths:
           - path: /sonarr
