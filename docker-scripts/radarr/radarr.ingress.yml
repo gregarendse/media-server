@@ -1,0 +1,22 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: radarr
+  namespace: media
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - 6f3806410f7b.sn.mynetname.net
+      secretName: radarr-secret
+  rules:
+    - host: 6f3806410f7b.sn.mynetname.net
+      http:
+        paths:
+          - path: /radarr
+            backend:
+              serviceName: radarr
+              servicePort: 7878

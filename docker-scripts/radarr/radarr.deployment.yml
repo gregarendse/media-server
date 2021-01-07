@@ -29,9 +29,6 @@ spec:
         ports:
         - containerPort: 7878
         volumeMounts:
-        - mountPath: /dev/rtc
-          name: rtc
-          readOnly: true
         - mountPath: /config
           name: config
         - mountPath: /downloads
@@ -42,11 +39,11 @@ spec:
           name: movies
         - mountPath: /red/downloads
           name: downloads
+        resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
       volumes:
-      - name: rtc
-        hostPath:
-          path: /dev/rtc
-          type: File
       - name: config
         hostPath:
           path: /home/docker/radarr/config
@@ -63,38 +60,3 @@ spec:
         hostPath:
           path: /red/Movies
           type: Directory
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: radarr
-  namespace: media
-spec:
-  selector:
-    app: radarr
-  ports:
-    - protocol: TCP
-      port: 7878
-  type: NodePort
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: radarr
-  namespace: media
-  annotations:
-    kubernetes.io/ingress.class: "nginx"    
-    cert-manager.io/issuer: "letsencrypt-prod"
-spec:
-  tls:
-  - hosts:
-    - www.arendse.xyz
-    secretName: radarr-secret
-  rules:
-  - host: www.arendse.xyz
-    http:
-      paths:
-      - path: /radarr
-        backend:
-          serviceName: radarr
-          servicePort: 7878
