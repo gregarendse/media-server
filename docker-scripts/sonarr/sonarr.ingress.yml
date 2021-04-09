@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sonarr
@@ -13,10 +13,23 @@ spec:
         - 6f3806410f7b.sn.mynetname.net
       secretName: sonarr-secret
   rules:
+    - host: sonarr.lan
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sonarr
+                port:
+                  name: http
     - host: 6f3806410f7b.sn.mynetname.net
       http:
         paths:
           - path: /sonarr
+            pathType: Prefix
             backend:
-              serviceName: sonarr
-              servicePort: 8989
+              service:
+                name: sonarr
+                port:
+                  name: http
