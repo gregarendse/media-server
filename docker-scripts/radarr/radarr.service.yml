@@ -9,5 +9,6 @@ spec:
     app: radarr
   ports:
     - protocol: TCP
+      name: http
       port: 7878
-  type: NodePort
+      targetPort: 7878
