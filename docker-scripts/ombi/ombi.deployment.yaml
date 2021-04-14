@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ombi
+  namespace: ombi
+  labels:
+    app: ombi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ombi
+  template:
+    metadata:
+      labels:
+        app: ombi
+    spec:
+      containers:
+        - name: ombi
+          image: linuxserver/ombi:development
+          env:
+            - name: PGID
+              value: "1001"
+            - name: PUID
+              value: "1001"
+            - name: TZ
+              value: '"Africa/Johannaesburg"'
+          ports:
+            - containerPort: 3579
+          resources: 
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      restartPolicy: Always
+      volumes:
+        - name: config
+          hostPath:
+            type: Directory
+            path: /home/docker/ombi/config

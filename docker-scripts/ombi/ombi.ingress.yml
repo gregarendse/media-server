@@ -1,0 +1,35 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ombi
+  namespace: ombi
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - 6f3806410f7b.sn.mynetname.net
+      secretName: ombi-secret
+  rules:
+    - host: requests.lan
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ombi
+                port:
+                  name: http
+    - host: 6f3806410f7b.sn.mynetname.net
+      http:
+        paths:
+          - path: /requests
+            pathType: Prefix
+            backend:
+              service:
+                name: ombi
+                port:
+                  name: http
