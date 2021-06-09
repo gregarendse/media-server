@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sonarr
-  namespace: media
+  namespace: sonarr
 spec:
   selector:
     app: sonarr

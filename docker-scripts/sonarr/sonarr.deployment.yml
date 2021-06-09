@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sonarr
-  namespace: media
+  namespace: sonarr
   labels:
     app: sonarr
 spec:
@@ -22,9 +22,9 @@ spec:
           imagePullPolicy: Always
           env:
             - name: PGID
-              value: "1001"
+              value: "117"
             - name: PUID
-              value: "1001"
+              value: "113"
           ports:
             - containerPort: 8989
           resources:

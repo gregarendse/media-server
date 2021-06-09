@@ -3,9 +3,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sonarr
-  namespace: media
+  namespace: sonarr
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: "public"
     cert-manager.io/issuer: "letsencrypt-prod"
 spec:
   tls:
