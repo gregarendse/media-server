@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nzbhydra
+  namespace: nzbhydra
+spec:
+  selector:
+    app: nzbhydra
+  ports:
+  - protocol: TCP
+    name: http
+    port: 5076
+    targetPort: 5076
