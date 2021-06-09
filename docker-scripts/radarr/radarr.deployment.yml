@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: radarr
-  namespace: media
+  namespace: radarr
   labels:
     app: radarr
 spec:
@@ -21,9 +21,9 @@ spec:
         image: linuxserver/radarr
         env:
         - name: PGID
-          value: "1001"
+          value: "117"
         - name: PUID
-          value: "1001"
+          value: "113"
         - name: TZ
           value: '"Africa/Johannaesburg"'
         ports:
