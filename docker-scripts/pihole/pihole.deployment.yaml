@@ -40,16 +40,14 @@ spec:
             - name: TZ
               value: Africa/Johannaesburg
             - name: VIRTUAL_HOST
-              value: pihole.arendse.xyz
-            - name: DNS1
-              value: 1.1.1.1
-            - name: DNS2
-              value: 1.0.0.1
+              value: pihole.lan
+            - name: PIHOLE_DNS_
+              value: 1.1.1.1;;1.0.0.1
             - name: WEBPASSWORD
               valueFrom:
                 secretKeyRef:
+                  name: pihole
                   key: password
-                  name: pihole-password
           resources: {}
           volumeMounts:
             - mountPath: /etc/pihole/
