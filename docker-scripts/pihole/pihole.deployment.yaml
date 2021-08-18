@@ -21,46 +21,63 @@ spec:
           image: pihole/pihole:latest
           imagePullPolicy: Always
           ports:
+
             - containerPort: 53
-              name: dns
+              name: dns-tcp
               protocol: TCP
+
             - containerPort: 53
               name: dns-udp
               protocol: UDP
+
             - containerPort: 67
               name: client-udp
               protocol: UDP
+
             - containerPort: 80
               name: http
               protocol: TCP
-            - containerPort: 443
-              name: https
-              protocol: TCP
+
           env:
             - name: TZ
               value: Africa/Johannaesburg
             - name: VIRTUAL_HOST
               value: pihole.lan
-            - name: PIHOLE_DNS_
-              value: 1.1.1.1;;1.0.0.1
+            - name: PIHOLE_DNS
+              value: 192.168.1.1
+            - name: REV_SERVER
+              value: "true"
+            - name: REV_SERVER_DOMAIN
+              value: lan
+            - name: REV_SERVER_CIDR
+              value: 192.168.1.0/24
+            - name: REV_SERVER_TARGET
+              value: 192.168.1.1
             - name: WEBPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: pihole
                   key: password
-          resources: {}
+
+          resources:
+            limits:
+              cpu: 200m
+              memory: 250Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
           volumeMounts:
             - mountPath: /etc/pihole/
               name: pihole
             - mountPath: /etc/dnsmasq.d/
               name: dnsmasq
-      restartPolicy: Always
       volumes:
         - name: pihole
           hostPath:
             type: Directory
-            path: /home/docker/pihole/
+            path: /home/docker/pihole/etc/pihole/
         - name: dnsmasq
           hostPath:
             type: Directory
-            path: /home/docker/pihole/dnsmasq.d/
+            path: /home/docker/pihole/etc/dnsmasq.d/

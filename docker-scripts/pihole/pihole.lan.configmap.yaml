@@ -1,0 +1,9 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: lan
+  namespace: pihole
+data:
+  99-lan.conf: |
+    server=/lan/192.168.1.1
