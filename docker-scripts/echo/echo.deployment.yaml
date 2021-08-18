@@ -1,23 +1,15 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: echo
-spec:
-  ports:
-  - port: 80
-    targetPort: 5678
-  selector:
-    app: echo
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: echo
+  namespace: echo
+  labels:
+    name: echo
 spec:
   selector:
     matchLabels:
       app: echo
-  replicas: 2
   template:
     metadata:
       labels:
@@ -27,8 +19,12 @@ spec:
       - name: echo
         image: hashicorp/http-echo
         args:
-        - "-text=echo"
+          - '-text="hello world"'
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
         ports:
         - containerPort: 5678
-
-
+          name: http
+          protocol: TCP
