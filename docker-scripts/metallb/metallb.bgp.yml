@@ -13,8 +13,9 @@ data:
     - name: default
       protocol: bgp
       addresses:
-      - 192.168.10.0/24
-    - name: pihole
-      protocol: bgp
-      addresses:
-      - 192.168.100.1/32
+      - 192.168.1.200-192.168.1.254
+      # 192.168.1.225 - 192.168.1.254
+    # - name: pihole
+    #   protocol: bgp
+    #   addresses:
+    #   - 192.168.1.200/32

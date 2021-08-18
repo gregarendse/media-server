@@ -11,3 +11,6 @@
 #   Compressed folders
 *.tar.gz
 
+#   Hidden files
+.*
+
