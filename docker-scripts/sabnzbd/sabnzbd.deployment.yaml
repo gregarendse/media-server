@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sabnzbd
+    namespace: sabnzbd
+    labels:
+        app: sabnzbd
+    annotations:
+        keel.sh/policy: force # update policy (available: patch, minor, major, all, force)
+        keel.sh/trigger: poll # enable active repository checking (webhooks and GCR would still work)
+        keel.sh/approvals: "0" # required approvals to update
+        keel.sh/match-tag: "true"
+        keel.sh/pollSchedule: "@daily"
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: sabnzbd
+    template:
+        metadata:
+            labels:
+                app: sabnzbd
+        spec:
+            containers:
+                - image: linuxserver/sabnzbd
+                  name: sabnzbd
+                  env:
+                      - name: PGID
+                        value: "117"
+                      - name: PUID
+                        value: "113"
+                      - name: TZ
+                        value: '"Africa/Johannaesburg"'
+                  ports:
+                      - containerPort: 8080
+                        name: http
+                        protocol: TCP
+                  resources: {}
+                  volumeMounts:
+                      - mountPath: /config
+                        name: config
+                      - mountPath: /incomplete-downloads
+                        name: incomplete-downloads
+                      - mountPath: /downloads
+                        name: downloads
+            volumes:
+                - name: config
+                  hostPath:
+                      type: Directory
+                      path: /home/docker/sabnzb/config
+                - name: scripts
+                  hostPath:
+                      type: Directory
+                      path: /home/docker/sonarr/scripts
+                - name: downloads
+                  hostPath:
+                      type: Directory
+                      path: /red/downloads
+                - name: incomplete-downloads
+                  hostPath:
+                      type: Directory
+                      path: /red/downloads/incomplete
