@@ -1,0 +1,40 @@
+{{ $root := . }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "server.fullname" $root }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "server.labels" $root | nindent 4 }}
+
+  {{- with $root.Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- range .Values.ingress.hosts }}
+  {{- if .tls }}
+  tls:
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ $root.Release.Name }}
+  {{- end }}
+  {{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "server.fullname" $root }}
+                port:
+                  name: {{ .service.name }}
+          {{- end }}
+  {{- end }}
+
+

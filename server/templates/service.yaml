@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "server.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "server.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "server.selectorLabels" . | nindent 4 }}
+
+  {{- with .Values.ports }}
+  ports:
+    {{- range $key, $val := . }}
+    - name: {{ $key }}
+      targetPort: {{ $key }}
+      port: {{ $val.source }}
+    {{ end -}}
+  {{- end }}

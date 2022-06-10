@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "server.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "server.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "server.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.environment }}
+          env:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.ports }}
+          ports:
+          {{- range $key, $val := . }}
+            - name: {{ $key | quote }}
+              containerPort: {{ $val.target }}
+          {{ end -}}
+          {{- end }}
+
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.volumes }}
+          volumeMounts:
+            {{- range $key, $val := . }}
+            - name: {{ $key | quote }}
+              mountPath: {{ $val.dest | quote }}
+            {{ end -}}
+          {{- end }}
+
+      {{- with .Values.volumes }}
+      volumes:
+        {{- range $key, $val := . }}
+        - name: {{ $key | quote }}
+          hostPath:
+            type: Directory
+            path: {{ $val.source | quote }}
+        {{ end -}}
+      {{- end -}}
