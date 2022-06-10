@@ -1,0 +1,48 @@
+image:
+    repository: openhab/openhab
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    # tag: "latest"
+
+volumes:
+    config:
+        source: "/home/docker/openhab/conf"
+        dest: "/openhab/conf"
+    userdata:
+        source: "/home/docker/openhab/userdata"
+        dest: "/openhab/userdata"
+    addons:
+        source: "/home/docker/openhab/addons"
+        dest: "/openhab/addons"
+
+environment:
+    - name: USER_ID
+      value: "996"
+    - name: GROUP_ID
+      value: "996"
+    - name: TZ
+      value: Africa/Johannaesburg
+    - name: CRYPTO_POLICY
+      value: unlimited
+
+ports:
+    http:
+        source: 8080
+        target: 8080
+        protocol: TCP
+    https:
+        source: 8443
+        target: 8443
+        protocol: TCP
+
+ingress:
+  annotations: {}
+#     kubernetes.io/ingress.class: public
+#     kubernetes.io/tls-acme: "true"
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: openhab.lan
+      paths:
+        - path: /
+          service:
+            name: http
