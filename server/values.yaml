@@ -22,7 +22,6 @@ environment:
         # dest: ""
 ports:
     http:
-        source: 80
         target: 80
         protocol: TCP
 

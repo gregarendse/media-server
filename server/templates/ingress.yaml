@@ -13,12 +13,12 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  tls:
   {{- range .Values.ingress.hosts }}
   {{- if .tls }}
-  tls:
     - hosts:
         - {{ .host | quote }}
-      secretName: {{ $root.Release.Name }}
+      secretName: {{ .host | quote }}
   {{- end }}
   {{- end }}
   rules:
@@ -26,15 +26,13 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
           - path: {{ .path }}
             pathType: Prefix
             backend:
               service:
-                name: {{ include "server.fullname" $root }}
+                name: {{ $root.Release.Name }}
                 port:
                   name: {{ .service.name }}
-          {{- end }}
   {{- end }}
 
 

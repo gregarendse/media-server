@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "server.fullname" . }}
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "server.labels" . | nindent 4 }}
@@ -15,6 +15,7 @@ spec:
     {{- range $key, $val := . }}
     - name: {{ $key }}
       targetPort: {{ $key }}
-      port: {{ $val.source }}
+      port: {{ $val.target }}
+      protocol: {{ $val.protocol }}
     {{ end -}}
   {{- end }}
