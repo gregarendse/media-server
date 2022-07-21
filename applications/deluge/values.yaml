@@ -1,0 +1,47 @@
+image:
+    repository: linuxserver/deluge
+    # Overrides the image tag whose default is the chart appVersion.
+    # tag: "develop"
+    pullPolicy: Always
+
+volumes:
+    config:
+        source: "/home/docker/deluge/config"
+        dest: "/conf"
+
+    downloads:
+        source: /red/downloads
+        dest: /downloads
+
+environment:
+    - name: PUID
+      value: "115"
+    - name: GUID
+      value: "1001"
+    - name: TZ
+      value: Africa/Johannaesburg
+
+ports:
+    http:
+        target: 8112
+        protocol: TCP
+
+    torrent-tcp:
+        target: 6881
+        protocol: TCP
+
+    torrent-udp:
+        target: 6881
+        protocol: UDP
+
+ingress:
+  annotations: {}
+#     kubernetes.io/ingress.class: public
+#     kubernetes.io/tls-acme: "true"
+#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: deluge.lan
+      paths:
+        - path: /
+          service:
+            name: http

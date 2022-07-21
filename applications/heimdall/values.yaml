@@ -1,0 +1,35 @@
+image:
+    repository: linuxserver/heimdall
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    # tag: "latest"
+
+volumes:
+    config:
+        source: "/home/docker/heimdall/config"
+        dest: "/config"
+ports:
+    http:
+        source: 80
+        target: 80
+        protocol: TCP
+    https:
+        source: 443
+        target: 443
+        protocol: TCP
+
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: public
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: heimdall.lan
+      path: /
+      service:
+        name: http
+      tls: false
+    - host: heimdall.arendse.nom.za
+      path: /
+      service:
+        name: http
+      tls: true
