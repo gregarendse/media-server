@@ -1,0 +1,13 @@
+---
+# Source: keel/templates/pod-disruption-budget.yaml
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: keel
+  namespace: "keel"
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: keel

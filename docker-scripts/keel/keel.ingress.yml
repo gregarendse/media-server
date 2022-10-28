@@ -1,0 +1,20 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keel
+  namespace: keel
+  annotations:
+    kubernetes.io/ingress.class: "public"
+spec:
+  rules:
+    - host: keel.lan
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keel
+                port:
+                  name: http
