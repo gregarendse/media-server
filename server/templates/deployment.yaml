@@ -6,6 +6,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "server.labels" . | nindent 4 }}
+  {{- with .Values.keel }}
+  annotations:
+    keel.sh/policy: {{ .policy | quote }}
+    keel.sh/match-tag: {{ .matchTag | quote }}
+    keel.sh/trigger: {{ .trigger | quote }}
+    keel.sh/pollSchedule: {{ .pollSchedule | quote }}
+    keel.sh/approvals: {{ .approvals | quote }}
+  {{- end }}
 spec:
   selector:
     matchLabels:

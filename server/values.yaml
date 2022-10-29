@@ -8,6 +8,26 @@ image:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
+keel:
+    # Update policy (available: patch, minor, major, all, force). Force update even if tag is not semver, ie: latest
+    policy: force
+    # true/false Only makes a difference when used with 'force' policy, will only update if tag matches :dev->:dev, :prod->:prod
+    matchTag: true
+    # Enable active repository checking (webhooks and GCR would still work)
+    trigger: poll
+    # Custom polling schedule can be specified as cron format or through predefined schedules (recommended solution).
+    # Available schedules:
+    #   Entry 	    Description 	                            Equivalent To
+    #   @annually 	Run once a year, midnight, Jan. 1st 	    0 0 0 1 1 *
+    #   @yearly  	Run once a year, midnight, Jan. 1st 	    0 0 0 1 1 *
+    #   @monthly 	Run once a month, midnight, first of month 	0 0 0 1 * *
+    #   @weekly 	Run once a week, midnight on Sunday 	    0 0 0 * * 0
+    #   @daily  	Run once a day, midnight 	                0 0 0 * * *
+    #   @midnight 	Run once a day, midnight 	                0 0 0 * * *
+    #   @hourly 	Run once an hour, beginning of hour 	    0 0 * * * *
+    pollSchedule: "@midnight"
+    # Required approvals to update. 0 means no approvals and will update automatically
+    approvals: "0"
 environment:
     - name: PUID
       value: "1000"
@@ -17,44 +37,45 @@ environment:
       value: Africa/Johannaesburg
 
 # volumes: {}
-    # name:
-        # source: ""
-        # dest: ""
+# name:
+# source: ""
+# dest: ""
 ports:
     http:
         target: 80
         protocol: TCP
 
 ingress:
-  annotations: {}
-#     kubernetes.io/ingress.class: public
-#     kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart.lan
-      paths:
-        - path: /
-          service:
-            name: http
-    - host: chart-example.local
-      paths:
-        - path: /
-          service:
-            name: http
-      tls:
-        secretName: chart-example-tls
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    annotations: {}
+    #     kubernetes.io/ingress.class: public
+    #     kubernetes.io/tls-acme: "true"
+    hosts:
+        - host: chart.lan
+          paths:
+              - path: /
+                service:
+                    name: http
+        - host: chart-example.local
+          paths:
+              - path: /
+                service:
+                    name: http
+          tls:
+              secretName: chart-example-tls
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
