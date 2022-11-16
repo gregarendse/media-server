@@ -23,13 +23,15 @@ ingress:
     kubernetes.io/ingress.class: public
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
-    - host: heimdall.lan
-      path: /
-      service:
-        name: http
-      tls: false
+    # - host: heimdall.lan
+    #   path: /
+    #   service:
+    #     name: http
+    #   tls: false
     - host: heimdall.arendse.nom.za
       path: /
       service:
         name: http
       tls: true
+
+

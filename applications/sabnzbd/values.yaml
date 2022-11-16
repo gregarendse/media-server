@@ -1,0 +1,51 @@
+---
+image:
+    repository: linuxserver/sabnzbd
+    # Overrides the image tag whose default is the chart appVersion.
+    pullPolicy: Always
+
+volumes:
+    config:
+        source: "/home/docker/sabnzbd/config"
+        dest: "/config"
+    downloads:
+        source: "/red/downloads"
+        dest: "/red/downloads"
+    incomplete-downloads:
+        source: /red/downloads/incomplete
+        dest: /incomplete-downloads
+
+environment:
+    - name: PUID
+      value: "113"
+    - name: GUID
+      value: "117"
+    - name: TZ
+      value: Africa/Johannaesburg
+
+ports:
+    http:
+        target: 8080
+        protocol: TCP
+
+ingress:
+  annotations:
+#     kubernetes.io/ingress.class: public
+#     kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: sabnzbd.lan
+      path: /
+      service:
+        name: http
+    - host: sabnzbd.arendse.nom.za
+      tls: true
+      path: /
+      service:
+        name: http
+    - host: 6f3806410f7b.sn.mynetname.net
+      tls: true
+      path: /sabnzbd
+      service:
+        name: http
+

@@ -6,27 +6,12 @@ metadata:
   namespace: jackett
   annotations:
     kubernetes.io/ingress.class: "public"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  tls:
-    - hosts:
-        - 6f3806410f7b.sn.mynetname.net
-      secretName: jackett-secret
   rules:
     - host: jackett.lan
       http:
         paths:
           - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: jackett
-                port:
-                  name: http
-    - host: 6f3806410f7b.sn.mynetname.net
-      http:
-        paths:
-          - path: /jackett
             pathType: Prefix
             backend:
               service:

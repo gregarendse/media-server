@@ -6,6 +6,13 @@ metadata:
   namespace: nzbhydra
   labels:
     app: nzbhydra
+  annotations:
+    keel.sh/policy: force # update policy (available: patch, minor, major, all, force)
+    keel.sh/trigger: poll # enable active repository checking (webhooks and GCR would still work)
+    keel.sh/approvals: "0" # required approvals to update
+    keel.sh/match-tag: "true"
+    keel.sh/pollSchedule: "@daily"
+
 spec:
   replicas: 1
   selector:
@@ -39,5 +46,3 @@ spec:
           hostPath:
             type: Directory
             path: /home/docker/nzbhydra2/config
-
-

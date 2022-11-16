@@ -1,0 +1,33 @@
+image:
+    repository: linuxserver/homeassistant
+    pullPolicy: Always
+    tag: "latest"
+
+volumes:
+    config:
+        source: "/home/docker/home-assistant/config"
+        dest: "/config"
+
+environment:
+    - name: PUID
+      value: "995"
+    - name: PGID
+      value: "995"
+    - name: TZ
+      value: Africa/Johannaesburg
+
+ports:
+    http:
+        target: 8123
+        protocol: TCP
+
+ingress:
+    annotations: {}
+    #     kubernetes.io/ingress.class: public
+    #     kubernetes.io/tls-acme: "true"
+    #cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    hosts:
+        - host: home-assistant.lan
+          path: /
+          service:
+              name: http

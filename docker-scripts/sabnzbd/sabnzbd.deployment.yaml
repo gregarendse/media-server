@@ -49,10 +49,6 @@ spec:
                   hostPath:
                       type: Directory
                       path: /home/docker/sabnzb/config
-                - name: scripts
-                  hostPath:
-                      type: Directory
-                      path: /home/docker/sonarr/scripts
                 - name: downloads
                   hostPath:
                       type: Directory

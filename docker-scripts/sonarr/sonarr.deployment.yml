@@ -6,6 +6,12 @@ metadata:
   namespace: sonarr
   labels:
     app: sonarr
+  annotations:
+    keel.sh/policy: force # update policy (available: patch, minor, major, all, force)
+    keel.sh/trigger: poll # enable active repository checking (webhooks and GCR would still work)
+    keel.sh/approvals: "0" # required approvals to update
+    keel.sh/match-tag: "true"
+    keel.sh/pollSchedule: "@daily"
 spec:
   replicas: 1
   selector:
@@ -18,7 +24,7 @@ spec:
     spec:
       containers:
         - name: sonarr
-          image: linuxserver/sonarr
+          image: linuxserver/sonarr:latest
           imagePullPolicy: Always
           env:
             - name: PGID
@@ -44,6 +50,8 @@ spec:
               name: tv-shows
             - mountPath: /red/downloads
               name: downloads
+            - mountPath: /red/mega/blackhole
+              name: mega-blackhole
       volumes:
         - name: config
           hostPath:
@@ -65,3 +73,7 @@ spec:
           hostPath:
             type: Directory
             path: /red/TV Shows
+        - name: mega-blackhole
+          hostPath:
+            path: /red/mega/blackhole
+            type: Directory

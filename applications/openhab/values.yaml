@@ -27,22 +27,26 @@ environment:
 
 ports:
     http:
-        source: 8080
         target: 8080
         protocol: TCP
     https:
-        source: 8443
         target: 8443
+        protocol: TCP
+    ssh:
+        target: 8101
+        protocol: TCP
+    lsp:
+        source: 5007
+        target: 5007
         protocol: TCP
 
 ingress:
   annotations: {}
 #     kubernetes.io/ingress.class: public
 #     kubernetes.io/tls-acme: "true"
-#     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+#cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - host: openhab.lan
-      paths:
-        - path: /
-          service:
-            name: http
+      path: /
+      service:
+        name: http

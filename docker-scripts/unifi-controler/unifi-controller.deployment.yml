@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unifi-controller
+  namespace: unifi-controller
+  labels:
+    app: unifi-controller
+  annotations:
+    keel.sh/policy: all     # update policy (available: patch, minor, major, all, force)
+    keel.sh/trigger: poll   # enable active repository checking (webhooks and GCR would still work)
+    keel.sh/approvals: "0"  # required approvals to update
+    keel.sh/match-tag: "true"
+    keel.sh/pollSchedule: "@daily"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unifi-controller
+  template:
+    metadata:
+      labels:
+        app: unifi-controller
+    spec:
+      containers:
+        - name: unifi-controller
+          image: linuxserver/unifi-controller:latest
+          imagePullPolicy: Always
+          env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            # - name: MEM_LIMIT
+            #   value: "1024"
+            # - name: MEM_STARTUP
+            #   value: "1024"
+          ports:
+            - name: ssh
+              containerPort: 22
+              protocol: TCP
+            - name: stun    #   Port used for STUN.
+              containerPort: 3478
+              protocol: UDP
+            - name: syslog  #   Port used for remote syslog capture.
+              containerPort: 5514
+              protocol: UDP
+            - name: com     #   Port used for device and application communication.
+              containerPort: 8080
+              protocol: TCP
+            - name: https   #   Port used for application GUI/API as seen in a web browser.
+              containerPort: 443
+              protocol: TCP
+            - name: httpss  #   Port used for application GUI/API as seen in a web browser.
+              containerPort: 8443
+              protocol: TCP
+            #   TCP 	8880 	Port used for HTTP portal redirection.
+            # TCP 	8843 	Port used for HTTPS portal redirection.
+            - name: test    #   Port used for UniFi mobile speed test.
+              containerPort: 6789
+              protocol: TCP
+            - name: dbcom  #   Port used for local-bound database communication.
+              containerPort: 27117
+              protocol: TCP
+            # UDP 	5656-5699 	Ports used by AP-EDU broadcasting.
+            - name: disc    #   Port used for device discovery.
+              containerPort: 10001
+              protocol: UDP
+            - name: discs   #   Port used for "Make application discoverable on L2 network" in the UniFi Network settings.
+              containerPort: 1900
+              protocol: UDP
+        #   resources:
+        #     limits:
+        #       cpu: "500m"
+        #       memory: "1024Mi"
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      volumes:
+        - name: config
+          hostPath:
+            type: Directory
+            path: /home/docker/unifi-controller/config
