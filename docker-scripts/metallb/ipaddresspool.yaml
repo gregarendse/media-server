@@ -1,0 +1,40 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+    name: default-addresspool
+    namespace: metallb-system
+spec:
+    addresses:
+        # 192.168.1.193 - 192.168.1.222 (30 hosts)
+        - 192.168.1.192/27
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+    name: unifi-controller
+    namespace: metallb-system
+spec:
+    addresses:
+        # 192.168.1.240 - 192.168.1.241 (2 hosts)
+        - 192.168.1.230/31
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+    name: trinity
+    namespace: metallb-system
+spec:
+    addresses:
+        # 192.168.1.240 - 192.168.1.241 (2 hosts)
+        - 192.168.1.240/31
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+    name: pihole
+    namespace: metallb-system
+spec:
+    addresses:
+        # 192.168.1.250 - 192.168.1.251 (2 hosts)
+        - 192.168.1.250/31

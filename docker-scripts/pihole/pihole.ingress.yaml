@@ -8,8 +8,7 @@ metadata:
     kubernetes.io/ingress.class: "public"
 spec:
   tls:
-    - hosts:
-        - pihole.lan
+    - hosts: []
       secretName: pihole-secret
   rules:
     - host: pihole.lan

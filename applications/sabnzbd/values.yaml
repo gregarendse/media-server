@@ -11,9 +11,6 @@ volumes:
     downloads:
         source: "/red/downloads"
         dest: "/red/downloads"
-    incomplete-downloads:
-        source: /red/downloads/incomplete
-        dest: /incomplete-downloads
 
 environment:
     - name: PUID

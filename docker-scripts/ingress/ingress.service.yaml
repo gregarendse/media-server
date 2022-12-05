@@ -5,7 +5,7 @@ metadata:
   name: ingress
   namespace: ingress
   annotations:
-    metallb.universe.tf/address-pool: trintiy
+    metallb.universe.tf/address-pool: trinity
 spec:
   selector:
     name: nginx-ingress-microk8s

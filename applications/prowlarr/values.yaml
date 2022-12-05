@@ -1,7 +1,7 @@
 image:
-    repository: linuxserver/prowlarr
+    repository: lscr.io/linuxserver/prowlarr
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "develop"
+    tag: nightly
     pullPolicy: Always
 
 volumes:
