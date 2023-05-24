@@ -10,5 +10,6 @@ spec:
   selector:
     app: echo
   ports:
-  - port: 80
+  - port: 5678
     targetPort: http
+    name: http

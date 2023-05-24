@@ -1,0 +1,26 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: plex-nodeport
+  namespace: plex
+spec:
+  selector:
+      app.kubernetes.io/instance: plex
+      app.kubernetes.io/name: server
+  type: NodePort
+  externalTrafficPolicy: Local
+  externalIPs:
+    - "192.168.0.50"
+  ports:
+    - name: plexmediaserver
+      protocol: TCP
+      port: 32400
+      targetPort: plexmediaserver
+      nodePort: 32400
+    
+    - name: DLNA
+      protocol: TCP
+      port: 32469
+      targetPort: dlna-tcp
+      nodePort: 32469

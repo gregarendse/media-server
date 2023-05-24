@@ -1,0 +1,43 @@
+image:
+  repository: keelhq/keel
+  tag: latest
+  pullPolicy: Always
+
+service:
+  enabled: true
+  type: ClusterIP
+  externalPort: 9300
+
+# Keel self-update
+# uncomment lines below if you want Keel to automaticly
+# self-update to the latest release version
+keel:
+  # keel policy (all/major/minor/patch/force)
+  policy: all
+  # trigger type, defaults to events such as pubsub, webhooks
+  trigger: poll
+  # polling schedule
+  pollSchedule: "@daily"
+  # images to track and update
+  images:
+    - repository: keelhq/keel
+      tag: latest
+
+ingress:
+  enabled: true
+  labels: {}
+  annotations: {}
+#    kubernetes.io/ingress.class: nginx
+#    kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: arendse.nom.za
+      paths:
+        - /keel
+    - host: keel.arendse.nom.za
+      paths:
+        - /
+  tls: 
+   - secretName: keel.arendse.nom.za
+     hosts:
+       - keel.arendse.nom.za
+       - arendse.nom.za

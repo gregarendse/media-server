@@ -5,6 +5,7 @@ set -o pipefail # Unveils hidden failures
 # set -o xtrace   # Print commands and their arguments as they are executed.
 
 application="${1}"
+user="${2}"
 
 function help() {
     echo """
@@ -16,10 +17,11 @@ function help() {
 }
 
 [[ -z "${application}" ]] && help || echo "Application: ${application}"
+[[ -z "${user}" ]] && user="${application}"; echo "User: ${user}"
 
 [[ ! -d "applications/${application}" ]] && help
 
-if [ ! -d "/home/docker/${application}" ];
+if [ ! -d "/home/${user}" ];
 then
     echo "No 'home' directory"
     exit 1

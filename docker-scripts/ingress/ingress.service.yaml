@@ -4,19 +4,22 @@ apiVersion: v1
 metadata:
   name: ingress
   namespace: ingress
-  annotations:
-    metallb.universe.tf/address-pool: trinity
 spec:
   selector:
     name: nginx-ingress-microk8s
-  type: LoadBalancer
+  type: NodePort
+  externalTrafficPolicy: Local
+  externalIPs:
+    - "192.168.0.50"
   ports:
     - name: http
       protocol: TCP
       port: 80
       targetPort: 80
+      nodePort: 32080
 
     - name: https
       protocol: TCP
       port: 443
       targetPort: 443
+      nodePort: 32443

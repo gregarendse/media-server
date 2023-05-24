@@ -6,19 +6,20 @@ metadata:
   namespace: echo
   labels:
     name: echo
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
+  # annotations:
+    # kubernetes.io/ingress.class: "public"
 spec:
+  ingressClassName: public
   tls:
     - hosts:
-      - echo.lan
+      - arendse.ddns.net
       secretName: echo
   rules:
-  - host: echo.lan
+  - host: arendse.ddns.net
     http:
       paths:
       - pathType: Prefix
-        path: /
+        path: /echo
         backend:
           service:
             name: echo

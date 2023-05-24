@@ -8,7 +8,17 @@ metadata:
     kubernetes.io/ingress.class: "public"
 spec:
   rules:
-    - host: keel.lan
+    - host: arendse.nom.za
+      http:
+        paths:
+        - path: /keel
+          pathType: Prefix
+          backend:
+            service:
+              name: keel
+              port:
+                name: http
+    - host: keel.arendse.nom.za
       http:
         paths:
           - path: /

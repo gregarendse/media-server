@@ -1,3 +1,4 @@
+{{ $root := . }}
 ---
 apiVersion: v1
 kind: Service
@@ -10,6 +11,8 @@ spec:
   selector:
     {{- include "server.selectorLabels" . | nindent 4 }}
 
+  type: {{ .Values.service.type }}
+
   {{- with .Values.ports }}
   ports:
     {{- range $key, $val := . }}
@@ -17,5 +20,8 @@ spec:
       targetPort: {{ $key }}
       port: {{ $val.target }}
       protocol: {{ $val.protocol }}
+      {{- if eq $root.Values.service.type "NodePort" }}
+      nodePort: {{ $val.target }}
+      {{- end }}
     {{ end -}}
   {{- end }}
