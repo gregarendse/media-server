@@ -6,7 +6,7 @@ image:
 
 volumes:
     config:
-        source: "/home/prowlarr/config"
+        source: "/mnt/data/prowlarr/config"
         dest: "/config"
 
 environment:

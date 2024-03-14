@@ -6,10 +6,10 @@ image:
 
 volumes:
     config:
-        source: "/home/sonarr/config"
+        source: "/mnt/data/sonarr/config"
         dest: "/config"
     scripts:
-        source: "/home/sonarr/scripts"
+        source: "/mnt/data/sonarr/scripts"
         dest: "/scripts"
 
     downloads:

@@ -6,7 +6,7 @@ image:
 
 volumes:
     config:
-        source: "/home/tautulli/config"
+        source: "/mnt/data/tautulli/config"
         dest: "/config"
 
 environment:

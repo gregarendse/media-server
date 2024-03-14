@@ -5,7 +5,7 @@ image:
 
 volumes:
     config:
-        source: "/home/docker/home-assistant/config"
+        source: "/mnt/data/docker/home-assistant/config"
         dest: "/config"
 
 environment:

@@ -6,7 +6,7 @@ image:
 
 volumes:
     config:
-        source: "/home/deluge/config"
+        source: "/mnt/data/deluge/config"
         dest: "/config"
 
     downloads:

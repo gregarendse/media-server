@@ -7,7 +7,7 @@ image:
 
 volumes:
     config:
-        source: "/home/radarr/config"
+        source: "/mnt/data/radarr/config"
         dest: "/config"
     downloads:
         source: "/red/downloads"

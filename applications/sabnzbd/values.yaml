@@ -6,7 +6,7 @@ image:
 
 volumes:
     config:
-        source: "/home/sabnzbd/config"
+        source: "/mnt/data/sabnzbd/config"
         dest: "/config"
     downloads:
         source: "/red/downloads"

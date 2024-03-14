@@ -6,10 +6,10 @@ image:
 
 volumes:
     config:
-        source: "/home/plex/config"
+        source: "/mnt/data/plex/config"
         dest: "/config"
     transcode:
-        source: "/home/plex/transcode"
+        source: "/mnt/data/plex/transcode"
         dest: "/transcode"
     data:
         source: "/red"

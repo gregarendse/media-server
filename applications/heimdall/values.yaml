@@ -6,7 +6,7 @@ image:
 
 volumes:
     config:
-        source: "/home/docker/heimdall/config"
+        source: "/mnt/data/docker/heimdall/config"
         dest: "/config"
 ports:
     http:

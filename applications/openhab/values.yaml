@@ -6,13 +6,13 @@ image:
 
 volumes:
     config:
-        source: "/home/docker/openhab/conf"
+        source: "/mnt/data/docker/openhab/conf"
         dest: "/openhab/conf"
     userdata:
-        source: "/home/docker/openhab/userdata"
+        source: "/mnt/data/docker/openhab/userdata"
         dest: "/openhab/userdata"
     addons:
-        source: "/home/docker/openhab/addons"
+        source: "/mnt/data/docker/openhab/addons"
         dest: "/openhab/addons"
 
 environment:
