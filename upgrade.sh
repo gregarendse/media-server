@@ -21,7 +21,7 @@ function help() {
 
 [[ ! -d "applications/${application}" ]] && help
 
-if [ ! -d "/home/${user}" ];
+if [ ! -d "/mnt/data/${applicaiton}" ];
 then
     echo "No 'home' directory"
     exit 1

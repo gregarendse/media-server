@@ -14,3 +14,5 @@
 #   Hidden files
 .*
 
+secret.yml
+secret.yaml
