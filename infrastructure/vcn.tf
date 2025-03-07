@@ -2,10 +2,10 @@
 # Source from https://registry.terraform.io/modules/oracle-terraform-modules/vcn/oci/
 module "vcn" {
   source  = "oracle-terraform-modules/vcn/oci"
-  version = "3.1.0"
+  version = "3.6.0"
 
   # Required Inputs
-  compartment_id = data.oci_identity_compartment.homelab.id
+  compartment_id = oci_identity_compartment.homelab.id
   region         = var.region
 
   internet_gateway_route_rules = null
@@ -23,7 +23,5 @@ module "vcn" {
   create_nat_gateway      = true
   create_service_gateway  = true
 
-  freeform_tags = {
-    "project" = "homelab"
-  }
+  freeform_tags = merge(var.tags, {})
 }
