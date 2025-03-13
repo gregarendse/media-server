@@ -8,5 +8,6 @@ terraform {
     # Using Backblaze B2 - these validations do not apply
     skip_credentials_validation = true
     skip_region_validation      = true
+    skip_requesting_account_id  = true
   }
 }
