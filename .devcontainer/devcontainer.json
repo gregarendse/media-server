@@ -1,13 +1,11 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "runArgs": [
     "--device=/dev/net/tun"
   ],
-  "features": {
-    "ghcr.io/devcontainers/features/terraform:latest": {},
-    "ghcr.io/devcontainers/features/kubectl-helm-minikube:latest": {},
-    "ghcr.io/tailscale/codespace/tailscale": {}
-  },
+  "features": {},
   "postCreateCommand": "/bin/sh .devcontainer/postCreate.sh",
   "remoteEnv": {
     "FILE_SSH_ID_ED25519": "${{ secrets.FILE_SSH_ID_ED25519 }}"
@@ -15,6 +13,15 @@
   "secrets": {
     "FILE_SSH_ID_ED25519": {
       "description": "SSH private key"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "hashicorp.terraform"
+      ]
     }
   }
 }
