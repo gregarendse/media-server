@@ -5,8 +5,8 @@ set -o nounset  #   When set, a reference to any variable you haven't previously
 set -o pipefail #   This setting prevents errors in a pipeline from being masked. If any command in a pipeline fails, that return code will be used as the return code of the whole pipeline. By
 
 # DEBUGGING
-set -o xtrace   #   DEBUGGING - Print commands
-set -o verbose  #   DEBUGGING - Pint shell input lines as they are read
+# set -o xtrace   #   DEBUGGING - Print commands
+# set -o verbose  #   DEBUGGING - Pint shell input lines as they are read
 
 DEBIAN_FRONTEND=noninteractive
 
@@ -20,6 +20,7 @@ apt install --yes \
     build-essential \
     ca-certificates \
     curl \
+    fzf \
     gnupg \
     inotify-tools \
     jq \
@@ -57,13 +58,21 @@ echo "deb [signed-by=${KEYRINGS}/hashicorp-archive-keyring.gpg] https://apt.rele
 # helps tools such as command-not-found to work correctly
 chmod 644 /etc/apt/sources.list.d/hashicorp.list
 
+echo "Setting up tailscale"
 curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg | gpg --dearmor -o "${KEYRINGS}/tailscale-archive-keyring.gpg" >/dev/null
 chmod 644 "${KEYRINGS}/tailscale-archive-keyring.gpg"
 echo "deb [signed-by=${KEYRINGS}/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu noble main" > /etc/apt/sources.list.d/tailscale.list
 chmod 644 /etc/apt/sources.list.d/tailscale.list
 
+echo "Setting up eza"
+curl -fsSL "https://raw.githubusercontent.com/eza-community/eza/main/deb.asc" | gpg --dearmor -o "${KEYRINGS}/gierens.gpg"
+chmod 644 /etc/apt/keyrings/gierens.gpg
+echo "deb [signed-by=${KEYRINGS}/gierens.gpg] http://deb.gierens.de stable main" | tee /etc/apt/sources.list.d/gierens.list
+chmod 644 /etc/apt/sources.list.d/gierens.list
+
 apt update
 apt install --yes \
+    eza \
     kubectl \
     helm \
     terraform \
@@ -71,11 +80,15 @@ apt install --yes \
 
 echo "Setting up go-lang"
 GO_VERSION="1.24.1"
+GOROOT="/usr/local/go"
 wget "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz"
-rm -rf /usr/local/go
+rm -rf "${GOROOT}"
 tar -C /usr/local -xzf "go${GO_VERSION}.linux-amd64.tar.gz"
 rm -rf "go${GO_VERSION}.linux-amd64.tar.gz"
-export PATH=$PATH:/usr/local/go/bin
+echo "export PATH=$PATH:${GOROOT}/bin" >> "/etc/profile"
 /usr/local/go/bin/go install github.com/k0sproject/k0sctl@latest
+
+echo "Setting up zoxide"
+curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 
 echo "Done"
