@@ -5,7 +5,11 @@
   "runArgs": [
     "--device=/dev/net/tun"
   ],
-  "features": {},
+  "features": {
+    "ghcr.io/tailscale/codespace/tailscale": {
+      "version": "latest"
+    }
+  },
   "postCreateCommand": "/bin/sh .devcontainer/postCreate.sh",
   "remoteEnv": {
     "FILE_SSH_ID_ED25519": "${{ secrets.FILE_SSH_ID_ED25519 }}"

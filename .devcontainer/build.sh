@@ -58,12 +58,6 @@ echo "deb [signed-by=${KEYRINGS}/hashicorp-archive-keyring.gpg] https://apt.rele
 # helps tools such as command-not-found to work correctly
 chmod 644 /etc/apt/sources.list.d/hashicorp.list
 
-echo "Setting up tailscale"
-curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg | gpg --dearmor -o "${KEYRINGS}/tailscale-archive-keyring.gpg" >/dev/null
-chmod 644 "${KEYRINGS}/tailscale-archive-keyring.gpg"
-echo "deb [signed-by=${KEYRINGS}/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu noble main" > /etc/apt/sources.list.d/tailscale.list
-chmod 644 /etc/apt/sources.list.d/tailscale.list
-
 echo "Setting up eza"
 curl -fsSL "https://raw.githubusercontent.com/eza-community/eza/main/deb.asc" | gpg --dearmor -o "${KEYRINGS}/gierens.gpg"
 chmod 644 /etc/apt/keyrings/gierens.gpg
@@ -75,20 +69,25 @@ apt install --yes \
     eza \
     kubectl \
     helm \
-    terraform \
-    tailscale
+    terraform
 
 echo "Setting up go-lang"
 GO_VERSION="1.24.1"
-GOROOT="/usr/local/go"
+export GOROOT="/usr/local/go"
 wget "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz"
 rm -rf "${GOROOT}"
 tar -C /usr/local -xzf "go${GO_VERSION}.linux-amd64.tar.gz"
 rm -rf "go${GO_VERSION}.linux-amd64.tar.gz"
-echo "export PATH=$PATH:${GOROOT}/bin" >> "/etc/profile"
+export GOBIN=${GOROOT}/bin
+export PATH=${PATH}:${GOBIN}
 /usr/local/go/bin/go install github.com/k0sproject/k0sctl@latest
 
 echo "Setting up zoxide"
-curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+ZOXIDE_TMP_DIR=$(mktemp -d)
+pushd "${ZOXIDE_TMP_DIR}"
+wget https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh
+sh ./install.sh --bin-dir=/usr/local/bin --man-dir=/usr/local/share/man
+popd
+rm -rf ${ZOXIDE_TMP_DIR}
 
 echo "Done"
