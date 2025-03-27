@@ -5,8 +5,8 @@ set -o nounset  #   When set, a reference to any variable you haven't previously
 set -o pipefail #   This setting prevents errors in a pipeline from being masked. If any command in a pipeline fails, that return code will be used as the return code of the whole pipeline. By
 
 # DEBUGGING
-# set -o xtrace   #   DEBUGGING - Print commands
-# set -o verbose  #   DEBUGGING - Pint shell input lines as they are read
+set -o xtrace   #   DEBUGGING - Print commands
+set -o verbose  #   DEBUGGING - Pint shell input lines as they are read
 
 DEBIAN_FRONTEND=noninteractive
 
@@ -69,7 +69,8 @@ apt install --yes \
     eza \
     kubectl \
     helm \
-    terraform
+    terraform=1.10.5-1
+# Pinning terraform version until this is resolved: https://github.com/hashicorp/terraform/issues/36704
 
 echo "Setting up go-lang"
 GO_VERSION="1.24.1"

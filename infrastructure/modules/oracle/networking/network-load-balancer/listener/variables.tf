@@ -25,21 +25,21 @@ variable "health_check" {
   description = "Health check configuration"
   type = object({
     protocol    = string
-    return_code = number
-    path        = string
+    return_code = optional(number)
+    path        = optional(string)
   })
 }
 
 variable "target_ids" {
   description = "The OCIDs of the backend sets"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "target_ips" {
   description = "The IP addresses of the backend sets"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "instances" {

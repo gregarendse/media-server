@@ -1,7 +1,7 @@
 # Outputs for the vcn module
 
 output "nlb_ip_addresses" {
-  value = oci_network_load_balancer_network_load_balancer.kubernetes.ip_addresses
+  value = oci_network_load_balancer_network_load_balancer.public.ip_addresses
 }
 
 output "compartment" {

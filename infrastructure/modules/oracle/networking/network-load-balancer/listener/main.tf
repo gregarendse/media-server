@@ -4,17 +4,31 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
 
   name                                  = var.name
   network_load_balancer_id              = var.load_balancer_id
-  policy                                = "TWO_TUPLE"
+  policy                                = "THREE_TUPLE"
   is_fail_open                          = false
   ip_version                            = "IPV4"
   is_preserve_source                    = false
   is_instant_failover_enabled           = false
   is_instant_failover_tcp_reset_enabled = true
 
-  health_checker {
-    protocol    = var.health_check.protocol
-    return_code = var.health_check.return_code
-    url_path    = var.health_check.path
+  dynamic "health_checker" {
+    for_each = var.health_check.protocol == "HTTP" || var.health_check.protocol == "HTTPS" ? [1] : []
+
+    content {
+      protocol    = var.health_check.protocol
+      return_code = var.health_check.return_code
+      url_path    = var.health_check.path
+    }
+
+  }
+
+  dynamic "health_checker" {
+    for_each = var.health_check.protocol == "TCP" ? [1] : []
+
+    content {
+      protocol = "TCP"
+    }
+
   }
 
   timeouts {

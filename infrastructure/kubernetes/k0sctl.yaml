@@ -1,0 +1,73 @@
+---
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: k0s
+spec:
+  hosts:
+    - role: "controller+worker"
+      noTaints: true
+      openSSH:
+        user: ubuntu
+        address: oci-alpha
+    - role: "controller+worker"
+      noTaints: true
+      openSSH:
+        user: ubuntu
+        address: oci-bravo
+  k0s:
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: ClusterConfig
+      metadata:
+        name: k0s
+      spec:
+        api:
+          k0sApiPort: 9443
+          port: 6443
+          externalAddress: kubernetes.arendse.nom.za
+          sans:
+            - kubernetes.arendse.nom.za
+        installConfig:
+          users:
+            etcdUser: etcd
+            kineUser: kube-apiserver
+            konnectivityUser: konnectivity-server
+            kubeAPIserverUser: kube-apiserver
+            kubeSchedulerUser: kube-scheduler
+        konnectivity:
+          adminPort: 8133
+          agentPort: 8132
+        network:
+          clusterDomain: cluster.local
+          dualStack:
+            enabled: false
+          kubeProxy:
+            iptables:
+              minSyncPeriod: 0s
+              syncPeriod: 0s
+            ipvs:
+              minSyncPeriod: 0s
+              syncPeriod: 0s
+              tcpFinTimeout: 0s
+              tcpTimeout: 0s
+              udpTimeout: 0s
+            metricsBindAddress: 0.0.0.0:10249
+            mode: iptables
+          provider: kuberouter
+          kuberouter:
+            autoMTU: true
+            hairpin: Enabled
+            metricsPort: 8080
+          nodeLocalLoadBalancing:
+            enabled: false
+            envoyProxy:
+              apiServerBindPort: 7443
+              konnectivityServerBindPort: 7132
+            type: EnvoyProxy
+          podCIDR: 10.244.0.0/16
+          serviceCIDR: 10.200.0.0/16
+        storage:
+          type: etcd
+        telemetry:
+          enabled: false

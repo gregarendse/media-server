@@ -21,7 +21,10 @@ resource "oci_core_security_list" "public" {
   }
 
   dynamic "ingress_security_rules" {
-    for_each = { for idx, port in local.public_ports : port.name => port }
+    for_each = {
+      for i in local.ports : i.name => i
+      if i.public == true
+    }
     iterator = port_rule
 
     content {
