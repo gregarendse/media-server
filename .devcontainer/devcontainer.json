@@ -17,7 +17,20 @@
   "secrets": {
     "FILE_SSH_ID_ED25519": {
       "description": "SSH private key"
-    }
+    },
+    "FILE_SSH_ID_RSA": {
+      "description": "SSH private key"
+    },
+    "FILE_KUBE_CONFIG": {
+      "description": "Kubeconfig file"
+    },
+    "FILE_OCI_KEY": {
+      "description": "OCI API key"
+    },
+    "OCI_TENANCY_OCID": {},
+    "OCI_USER_OCID": {},
+    "OCI_FINGERPRINT": {},
+    "OCI_REGION": {}
   },
   "customizations": {
     "vscode": {

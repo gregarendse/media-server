@@ -1,38 +1,3 @@
-locals {
-  hosts = [
-    { ip = "10.100.1.144" },
-    { ip = "10.100.1.166" },
-  ]
-  targets = {
-    for i in flatten([
-      for host_k, host_v in local.hosts : [
-        for port_k, port_v in local.ports :
-        {
-          port = port_v,
-          host = host_v
-        } if port_v.public == true
-      ]
-    ]) : format("%s-%s", i.port.name, i.host.ip) => i
-  }
-
-  # id: data.oci_core_instances.instances.instances.*.id,
-  target_ids = [
-    for i in data.oci_core_instances.instances.instances : i.id
-  ]
-}
-
-resource "null_resource" "ports" {
-  triggers = {
-    ports = jsonencode(local.ports)
-  }
-}
-
-resource "null_resource" "targets" {
-  # This resource is used to trigger the replacement of the backend set and backend resources
-  triggers = {
-    targets = jsonencode(local.targets)
-  }
-}
 
 resource "oci_core_public_ip" "kubernetes" {
   compartment_id = data.oci_identity_compartment.homelab.id
@@ -82,10 +47,10 @@ resource "oci_core_public_ip" "kubernetes" {
 #   destination_type = "CIDR_BLOCK"
 # }
 
-resource "oci_network_load_balancer_network_load_balancer" "kubernetes" {
+resource "oci_network_load_balancer_network_load_balancer" "public" {
   compartment_id = data.oci_identity_compartment.homelab.id
 
-  display_name = "kubernetes"
+  display_name = "public"
 
   subnet_id = data.oci_core_subnet.public.id
 
@@ -110,9 +75,12 @@ resource "oci_network_load_balancer_network_load_balancer" "kubernetes" {
 module "listeners" {
   source = "../modules/oracle/networking/network-load-balancer/listener"
 
-  for_each = { for port in local.public_ports : port.name => port }
+  for_each = {
+    for port in local.ports : port.name => port
+    if port.public == true
+  }
 
-  load_balancer_id = oci_network_load_balancer_network_load_balancer.kubernetes.id
+  load_balancer_id = oci_network_load_balancer_network_load_balancer.public.id
 
   name         = each.value.name
   protocol     = each.value.protocol
