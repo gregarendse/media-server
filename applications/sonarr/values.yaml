@@ -1,6 +1,6 @@
 ---
 image:
-    repository: lscr.io/linuxserver/sonarr
+    repository: linuxserver/sonarr
     # Overrides the image tag whose default is the chart appVersion.
     pullPolicy: Always
 
@@ -49,8 +49,7 @@ ports:
 
 ingress:
   annotations:
-#     kubernetes.io/ingress.class: public
-#     kubernetes.io/tls-acme: "true"
+    kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - host: arendse.nom.za

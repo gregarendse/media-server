@@ -124,7 +124,7 @@ controller:
   # We do not support namespaced IngressClasses, yet, so a ClusterRole and a ClusterRoleBinding is required.
   ingressClassResource:
     # -- Name of the IngressClass
-    name: nginx
+    name: public
     # -- Create the IngressClass or not
     enabled: true
     # -- If true, Ingresses without `ingressClassName` get assigned to this IngressClass on creation.
