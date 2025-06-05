@@ -1,0 +1,114 @@
+# Default values for server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: linuxserver/wireguard
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+keel:
+  # Update policy (available: patch, minor, major, all, force). Force update even if tag is not semver, ie: latest
+  policy: force
+  # true/false Only makes a difference when used with 'force' policy, will only update if tag matches :dev->:dev, :prod->:prod
+  matchTag: true
+  # Enable active repository checking (webhooks and GCR would still work)
+  trigger: poll
+  # Custom polling schedule can be specified as cron format or through predefined schedules (recommended solution).
+  # Available schedules:
+  #   Entry 	    Description 	                            Equivalent To
+  #   @annually 	Run once a year, midnight, Jan. 1st 	    0 0 0 1 1 *
+  #   @yearly  	Run once a year, midnight, Jan. 1st 	    0 0 0 1 1 *
+  #   @monthly 	Run once a month, midnight, first of month 	0 0 0 1 * *
+  #   @weekly 	Run once a week, midnight on Sunday 	    0 0 0 * * 0
+  #   @daily  	Run once a day, midnight 	                0 0 0 * * *
+  #   @midnight 	Run once a day, midnight 	                0 0 0 * * *
+  #   @hourly 	Run once an hour, beginning of hour 	    0 0 * * * *
+  pollSchedule: "@midnight"
+  # Required approvals to update. 0 means no approvals and will update automatically
+  approvals: "0"
+environment:
+# wireguard:x:123:127::/home/wireguard:/bin/false
+  - name: PUID
+    value: "123"
+  - name: PGID
+    value: "127"
+  - name: TZ
+    value: Africa/Johannaesburg
+
+  # External IP or domain name for docker host. Used in server mode. If set to auto, the container will try to determine and set the external IP automatically
+  - name: SERVERURL
+    value: arendse.ddns.net #optional
+
+  # External port for docker host. Used in server mode.
+  - name: SERVERPORT
+    value: "51820" #optional
+
+  # Number of peers to create confs for. Required for server mode. Can also be a list of names: myPC,myPhone,myTablet (alphanumeric only)
+  - name: PEERS
+    value: "miktotik,gregPhone,gregLaptop,madiPhone,madiLaptop,davidPhone,davidLaptop" #optional
+  
+
+  #  DNS server set in peer/client configs (can be set as 8.8.8.8). Used in server mode. Defaults to auto, which uses wireguard docker host's DNS via included CoreDNS forward.
+  # - name: PEERDNS
+    # value: "auto" #optional
+
+  # Internal subnet for the wireguard and server and peers (only change if it clashes). Used in server mode.
+  - name: INTERNAL_SUBNET
+    value: "192.168.100.0"
+
+  # The IPs/Ranges that the peers will be able to reach using the VPN connection. If not specified the default value is: '0.0.0.0/0, ::0/0' This will cause ALL traffic to route through the VPN, if you want split tunneling, set this to only the IPs you would like to use the tunnel AND the ip of the server's WG ip, such as 10.13.13.1.
+  - name: ALLOWEDIPS
+    value: "0.0.0.0/0" #optional
+
+  # Set to all or a list of comma separated peers (ie. 1,4,laptop) for the wireguard server to send keepalive packets to listed peers every 25 seconds. Useful if server is accessed via domain name and has dynamic IP. Used only in server mode.
+  - name: PERSISTENTKEEPALIVE
+    value: "all" #optional
+
+  # Generated QR codes will be displayed in the docker log. Set to false to skip log output.
+  - name: LOG_CONFS
+    value: "true" #optional
+
+  - name: SERVER_ALLOWEDIPS_PEER_mikrotik
+    value: "192.168.1.0/24"
+
+
+volumes: 
+  config:
+    source: "/mnt/data/wireguard/config"
+    dest: "/config"
+  modules:
+    # optional
+    source: "/lib/modules"
+    dest: "/lib/modules"
+
+service:
+  type: NodePort
+ports:
+  wireguard:
+    target: 51820
+    nodePort: 31820
+    protocol: UDP
+
+# No ingress
+ingress: {}
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# No secrets
+secrets: {}
+
+securityContext:
+  privileged: true
+  capabilities:
+    add:
+    - NET_ADMIN
+    - SYS_MODULE
+    - NET_BIND_SERVICE

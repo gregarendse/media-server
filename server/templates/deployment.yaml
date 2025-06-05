@@ -46,6 +46,7 @@ spec:
           {{- range $key, $val := . }}
             - name: {{ $key | quote }}
               containerPort: {{ $val.target }}
+              protocol: {{ $val.protocol | default "TCP" }}
           {{ end -}}
           {{- end }}
 
@@ -60,6 +61,11 @@ spec:
             - name: {{ $key | quote }}
               mountPath: {{ $val.dest | quote }}
             {{ end -}}
+          {{- end }}
+
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
 
       {{- with .Values.volumes }}

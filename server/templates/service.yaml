@@ -21,7 +21,7 @@ spec:
       port: {{ $val.target }}
       protocol: {{ $val.protocol }}
       {{- if eq $root.Values.service.type "NodePort" }}
-      nodePort: {{ $val.target }}
+      nodePort: {{ $val.nodePort }}
       {{- end }}
     {{ end -}}
   {{- end }}
