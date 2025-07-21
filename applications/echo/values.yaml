@@ -1,0 +1,19 @@
+---
+image:
+  repository: hashicorp/http-echo
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: kubernetes.arendse.nom.za
+      path: /echo
+      service:
+        name: http
+    # - host: echo.kubernetes.arendse.nom.za
+    #   path: /
+    #   service:
+    #     name: http
+ports:
+  http:
+    protocol: TCP
+    target: 5678

@@ -14,7 +14,13 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.className | default "public" }}
+
+  {{- if $root.Values.ingress.className }}
+  ingressClassName: {{ $root.Values.ingress.className | quote }}
+  {{- else if $root.Values.ingress.class }}
+  ingressClassName: {{ $root.Values.ingress.class | quote }}
+  {{- end }}
+
   tls:
   {{- range .Values.ingress.hosts }}
   {{- if .tls }}
