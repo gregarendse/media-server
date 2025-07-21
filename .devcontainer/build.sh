@@ -82,6 +82,7 @@ rm -rf "go${GO_VERSION}.linux-amd64.tar.gz"
 export GOBIN=${GOROOT}/bin
 export PATH=${PATH}:${GOBIN}
 /usr/local/go/bin/go install github.com/k0sproject/k0sctl@latest
+/usr/local/go/bin/go install github.com/derailed/k9s@latest
 
 echo "Setting up zoxide"
 ZOXIDE_TMP_DIR=$(mktemp -d)
