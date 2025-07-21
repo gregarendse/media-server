@@ -2,14 +2,14 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
   # https://docs.oracle.com/en-us/iaas/api/#/en/networkloadbalancer/20200501/datatypes/UpdateBackendSetDetails
   # https://docs.oracle.com/en-us/iaas/api/#/en/networkloadbalancer/20200501/BackendSet/CreateBackendSet
 
-  name                                  = var.name
-  network_load_balancer_id              = var.load_balancer_id
-  policy                                = "THREE_TUPLE"
-  is_fail_open                          = false
-  ip_version                            = "IPV4"
-  is_preserve_source                    = false
-  is_instant_failover_enabled           = false
-  is_instant_failover_tcp_reset_enabled = true
+  name                     = var.name
+  network_load_balancer_id = var.load_balancer_id
+  policy                   = "FIVE_TUPLE"
+  is_preserve_source       = true
+  is_fail_open             = false
+  # ip_version                            = "IPV4"
+  # is_instant_failover_enabled           = false
+  # is_instant_failover_tcp_reset_enabled = true
 
   dynamic "health_checker" {
     for_each = var.health_check.protocol == "HTTP" || var.health_check.protocol == "HTTPS" ? [1] : []
@@ -39,11 +39,10 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
 }
 
 resource "oci_network_load_balancer_listener" "listener" {
-
-  network_load_balancer_id = var.load_balancer_id
   default_backend_set_name = var.name
+  name                     = var.name
+  network_load_balancer_id = var.load_balancer_id
 
-  name     = var.name
   port     = var.ports.listener
   protocol = var.protocol
 

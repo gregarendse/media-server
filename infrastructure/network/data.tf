@@ -1,4 +1,3 @@
-
 data "oci_identity_compartments" "compartments" {
   compartment_id            = var.tenancy_ocid
   compartment_id_in_subtree = true
@@ -18,6 +17,11 @@ data "oci_core_vcns" "vcn" {
 
 data "oci_core_vcn" "homelab" {
   vcn_id = data.oci_core_vcns.vcn.virtual_networks[0].id
+}
+
+data "oci_core_internet_gateways" "internet_gateways" {
+  compartment_id = data.oci_identity_compartment.homelab.id
+  vcn_id         = data.oci_core_vcn.homelab.id
 }
 
 data "oci_core_subnets" "public_subnets" {

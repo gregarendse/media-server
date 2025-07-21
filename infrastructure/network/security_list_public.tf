@@ -69,10 +69,8 @@ resource "oci_core_security_list" "public" {
   }
 
   ingress_security_rules {
-    description = "Ingress ALL from private subnet"
-    stateless   = false
-    source      = local.subnet_private_cdir
-    source_type = "CIDR_BLOCK"
+    description = "Allow all VCN traffic"
+    source      = data.oci_core_vcn.homelab.cidr_block
     protocol    = "all"
   }
 

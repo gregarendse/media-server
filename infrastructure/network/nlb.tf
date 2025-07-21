@@ -1,68 +1,27 @@
-
+# Public Load Balancer
 resource "oci_core_public_ip" "kubernetes" {
   compartment_id = data.oci_identity_compartment.homelab.id
   display_name   = "Kubernetes"
   lifetime       = "RESERVED"
 
+  # ToDo: Replace with reference
+  private_ip_id = "ocid1.privateip.oc1.uk-london-1.abwgiljr5fn4y6uuuoakjy3vkdkyen6pjqig6newy7zhl33mki7cuqlkryka"
+
   freeform_tags = merge(var.tags, {})
 }
-
-# resource "oci_core_network_security_group" "kubernetes" {
-#   compartment_id = data.oci_identity_compartment.homelab.id
-#   vcn_id         = data.oci_core_vcn.homelab.id
-
-#   display_name = "Kubernetes"
-
-#   freeform_tags = merge(var.tags, {})
-# }
-
-# resource "oci_core_network_security_group_security_rule" "ingress_tcp" {
-#   for_each = {
-#     for port in local.public_ports : port.name => port
-#   }
-
-#   network_security_group_id = oci_core_network_security_group.kubernetes.id
-
-#   direction = "INGRESS"
-#   protocol  = local.protocol_numbers.TCP
-
-#   source      = "0.0.0.0/0"
-#   source_type = "CIDR_BLOCK"
-
-#   tcp_options {
-#     destination_port_range {
-#       min = each.value.ports.listener
-#       max = each.value.ports.listener
-#     }
-#   }
-# }
-
-# resource "oci_core_network_security_group_security_rule" "egress_tcp" {
-#   network_security_group_id = oci_core_network_security_group.kubernetes.id
-
-#   direction = "EGRESS"
-#   protocol  = local.protocol_numbers.TCP
-
-#   destination      = "0.0.0.0/0"
-#   destination_type = "CIDR_BLOCK"
-# }
 
 resource "oci_network_load_balancer_network_load_balancer" "public" {
   compartment_id = data.oci_identity_compartment.homelab.id
 
-  display_name = "public"
+  display_name = "Kubernetes"
 
+  # Public Load Balancers must be in a public subnet
   subnet_id = data.oci_core_subnet.public.id
 
   is_private = false
 
-  nlb_ip_version = "IPV4"
-  # is_preserve_source_destination = false
-  # is_symmetric_hash_enabled      = false
-
-  # network_security_group_ids = [
-  #   oci_core_network_security_group.kubernetes.id
-  # ]
+  nlb_ip_version                 = "IPV4"
+  is_preserve_source_destination = false
 
   # reserved_ips {
   #   id = oci_core_public_ip.kubernetes.id

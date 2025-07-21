@@ -14,7 +14,7 @@ resource "oci_core_subnet" "private" {
   # Do not use module.vcn.nat_gateway_id, because it is the OCID for the gateway and not the route table.
   # route_table_id = module.vcn.nat_route_id
   security_list_ids = [
-    oci_core_security_list.private.id
+    oci_core_security_list.private.id,
   ]
 
   freeform_tags = merge(var.tags, {})
@@ -33,7 +33,7 @@ resource "oci_core_subnet" "public" {
   cidr_block = local.subnet_public_cdir
 
   # Optional
-  # route_table_id = module.vcn.ig_route_id
+  route_table_id = oci_core_route_table.public.id
   security_list_ids = [
     oci_core_security_list.public.id
   ]
