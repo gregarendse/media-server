@@ -9,10 +9,10 @@ ingress:
       path: /echo
       service:
         name: http
-    # - host: echo.kubernetes.arendse.nom.za
-    #   path: /
-    #   service:
-    #     name: http
+    - host: echo.arendse.nom.za
+      path: /
+      service:
+        name: http
 ports:
   http:
     protocol: TCP

@@ -15,7 +15,12 @@
   },
   "postCreateCommand": "/bin/sh .devcontainer/postCreate.sh",
   "remoteEnv": {
-    "FILE_SSH_ID_ED25519": "${{ secrets.FILE_SSH_ID_ED25519 }}"
+    "FILE_SSH_ID_ED25519": "${{ secrets.FILE_SSH_ID_ED25519 }}",
+    "TF_VAR_cloudflare_api_token": "${{ secrets.CLOUDFLARE_API_TOKEN }}",
+    "TF_VAR_tenancy_ocid": "${{ secrets.OCI_TENANCY_OCID }}",
+    "TF_VAR_user_ocid": "${{ secrets.OCI_USER_OCID }}",
+    "TF_VAR_fingerprint": "${{ secrets.OCI_FINGERPRINT }}",
+    "TF_VAR_region": "${{ secrets.OCI_REGION }}"
   },
   "secrets": {
     "FILE_SSH_ID_ED25519": {
@@ -30,10 +35,21 @@
     "FILE_OCI_KEY": {
       "description": "OCI API key"
     },
-    "OCI_TENANCY_OCID": {},
-    "OCI_USER_OCID": {},
-    "OCI_FINGERPRINT": {},
-    "OCI_REGION": {}
+    "OCI_TENANCY_OCID": {
+      "description": "OCI tenancy OCID"
+    },
+    "OCI_USER_OCID": {
+      "description": "OCI user OCID"
+    },
+    "OCI_FINGERPRINT": {
+      "description": "OCI fingerprint"
+    },
+    "OCI_REGION": {
+      "description": "OCI region"
+    },
+    "CLOUDFLARE_API_TOKEN": {
+      "description": "Cloudflare API token"
+    }
   },
   "customizations": {
     "vscode": {
