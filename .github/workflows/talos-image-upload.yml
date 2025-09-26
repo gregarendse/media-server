@@ -91,10 +91,9 @@ jobs:
           silent: false
           command: >-
             os object put 
-              --bucket-name images
+              --bucket-name "images"
               --name talos.oci 
               --file talos.oci 
-              --namespace $OCI_NAMESPACE
 
       - name: Import Custom Image to OCI
         uses: oracle-actions/run-oci-cli-command@v1.3.2
@@ -106,8 +105,7 @@ jobs:
               --display-name "Talos Linux ${TALOS_VERSION} ARM64" 
               --os "Linux" 
               --launch-mode "NATIVE" 
-              --bucket-name $OCI_BUCKET_NAME 
+              --bucket-name "images" 
               --name talos.oci 
-              --namespace $OCI_NAMESPACE
 
 
