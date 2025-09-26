@@ -16,11 +16,11 @@ jobs:
       OCI_BUCKET_NAME: ${{ secrets.OCI_BUCKET_NAME }}
       OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
 
-      OCI_CLI_USER: ${{ secrets.OCI_USER_OCID }}
+      OCI_CLI_USER: ${{ secrets.OCI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_TENANCY_OCID }}
       OCI_CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_KEY}}
-      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+      OCI_CLI_REGION: ${{ secrets.OCI_REGION }}
 
     steps:
 
