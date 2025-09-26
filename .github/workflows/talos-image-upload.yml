@@ -13,7 +13,6 @@ jobs:
       TALOS_VERSION: "v1.11.2"
 
       OCI_COMPARTMENT_ID: ${{ secrets.OCI_COMPARTMENT_ID }}
-      OCI_BUCKET_NAME: ${{ secrets.OCI_BUCKET_NAME }}
       OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
 
       OCI_CLI_USER: ${{ secrets.OCI_USER }}
@@ -92,7 +91,7 @@ jobs:
           silent: false
           command: >-
             os object put 
-              --bucket-name $OCI_BUCKET_NAME 
+              --bucket-name images
               --name talos.oci 
               --file talos.oci 
               --namespace $OCI_NAMESPACE
