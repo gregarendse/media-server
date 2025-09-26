@@ -15,17 +15,19 @@ jobs:
       OCI_COMPARTMENT_ID: ${{ secrets.OCI_COMPARTMENT_ID }}
       OCI_BUCKET_NAME: ${{ secrets.OCI_BUCKET_NAME }}
       OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
+      OCI_DOMAIN_BASE_URL: ${{ secrets.OCI_DOMAIN_BASE_URL }}
       TALOS_VERSION: "v1.11.2"
 
     steps:
 
 
       - name: Configure OCI credentials (OIDC)
-        uses: oracle-actions/configure-oci-credentials@v1.2.2
+        uses: gtrevorrow/oci-token-exchange-action@v1
         with:
-          auth-type: "OIDC"
-          tenancy-ocid: ${{ secrets.OCI_TENANCY_OCID }}
-          region: ${{ secrets.OCI_REGION }}
+          oidc_client_identifier: "${{secrets.OCI_CLIENT_ID}}:${{secrets.OCI_CLIENT_SECRET}}"
+          domain_base_url: ${{secrets.OCI_DOMAIN_BASE_URL}}
+          oci_tenancy: ${{secrets.OCI_TENANCY_OCID}}
+          oci_region: ${{secrets.OCI_REGION}}
 
       - name: Checkout
         uses: actions/checkout@v4
