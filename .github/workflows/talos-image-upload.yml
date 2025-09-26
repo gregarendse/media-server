@@ -90,11 +90,35 @@ jobs:
         with:
           silent: false
           command: os object put --force --namespace "${{ secrets.OCI_NAMESPACE }}" --bucket-name "images" --name talos.oci --file talos.oci 
-
+      - name: Populate image metadata
+        run: |
+          cat > image-import.json <<'EOF'
+          {
+            "bucketName": "images",
+            "compartmentId": "${OCI_COMPARTMENT_ID}",
+            "displayName": "Talos Linux ${TALOS_VERSION} ARM64",
+            "imageSourceDetails": {
+                "bucketName": "images",
+                "namespaceName": "${OCI_NAMESPACE}",
+                "objectName": "talos.oci",
+                "operatingSystem": "Talos Linux",
+                "operatingSystemVersion": "${TALOS_VERSION}",
+                "sourceImageType": "QCOW2",
+                "sourceType": "QCOW2"
+            },
+            "launchMode": "NATIVE",
+            "name": "talos.oci",
+            "namespace": "${OCI_NAMESPACE}",
+            "operatingSystem": "Talos Linux",
+            "operatingSystemVersion": "${TALOS_VERSION}",
+            "sourceImageType": "QCOW2"
+          }
+          EOF
+          
       - name: Import Custom Image to OCI
         uses: oracle-actions/run-oci-cli-command@v1.3.2
         with:
           silent: false
-          command: compute image import from-object --compartment-id $OCI_COMPARTMENT_ID --display-name "Talos Linux ${TALOS_VERSION} ARM64" --operating-system "Linux" --launch-mode "NATIVE" --namespace "${{ secrets.OCI_NAMESPACE }}" --bucket-name "images" --name talos.oci 
+          command: compute image import from-object --from-json file://image-import.json
 
 
