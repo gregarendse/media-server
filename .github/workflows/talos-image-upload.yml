@@ -95,6 +95,6 @@ jobs:
         uses: oracle-actions/run-oci-cli-command@v1.3.2
         with:
           silent: false
-          command: compute image import from-object --compartment-id $OCI_COMPARTMENT_ID --display-name "Talos Linux ${TALOS_VERSION} ARM64" --os "Linux" --launch-mode "NATIVE" --bucket-name "images" --name talos.oci 
+          command: compute image import from-object --compartment-id $OCI_COMPARTMENT_ID --display-name "Talos Linux ${TALOS_VERSION} ARM64" --operating-system "Linux" --launch-mode "NATIVE" --bucket-name "images" --name talos.oci 
 
 
