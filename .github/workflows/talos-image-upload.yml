@@ -10,35 +10,34 @@ jobs:
       id-token: write
       contents: read
     env:
-      OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
-      OCI_REGION: ${{ secrets.OCI_REGION }}
+      TALOS_VERSION: "v1.11.2"
+
       OCI_COMPARTMENT_ID: ${{ secrets.OCI_COMPARTMENT_ID }}
       OCI_BUCKET_NAME: ${{ secrets.OCI_BUCKET_NAME }}
       OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
-      OCI_DOMAIN_BASE_URL: ${{ secrets.OCI_DOMAIN_BASE_URL }}
-      TALOS_VERSION: "v1.11.2"
+
+      OCI_CLI_USER: ${{ secrets.OCI_USER_OCID }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_TENANCY_OCID }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_KEY}}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
     steps:
-
-
-      - name: Configure OCI credentials (OIDC)
-        uses: gtrevorrow/oci-token-exchange-action@v1
-        with:
-          oidc_client_identifier: "${{secrets.OCI_CLIENT_ID}}:${{secrets.OCI_CLIENT_SECRET}}"
-          domain_base_url: ${{secrets.OCI_DOMAIN_BASE_URL}}
-          oci_tenancy: ${{secrets.OCI_TENANCY_OCID}}
-          oci_region: ${{secrets.OCI_REGION}}
 
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Test OCI CLI
+        uses: oracle-actions/run-oci-cli-command@v1.3.2
+        with:
+          command: os ns get
+
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-utils unzip
-          curl -L https://github.com/oracle/oci-cli/releases/latest/download/oci-cli.zip -o oci-cli.zip
-          unzip oci-cli.zip
-          sudo bash install.sh --accept-all-defaults
+          sudo apt-get install -y \
+            qemu-utils \
+            unzip
 
       - name: Download Talos ISO
         run: |
@@ -86,22 +85,26 @@ jobs:
           tar zcf talos.oci talos.qcow2 image_metadata.json
 
       - name: Upload QCOW2 to Object Storage
-        run: |
-          oci os object put \
-            --bucket-name $OCI_BUCKET_NAME \
-            --name talos.oci \
-            --file talos.oci \
-            --namespace $OCI_NAMESPACE
+        uses: oracle-actions/run-oci-cli-command@v1.3.2
+        with:
+          command: >-
+            oci os object put 
+              --bucket-name $OCI_BUCKET_NAME 
+              --name talos.oci 
+              --file talos.oci 
+              --namespace $OCI_NAMESPACE
 
       - name: Import Custom Image to OCI
-        run: |
-          oci compute image import from-object \
-            --compartment-id $OCI_COMPARTMENT_ID \
-            --display-name "Talos Linux ${TALOS_VERSION} ARM64" \
-            --os "Linux" \
-            --launch-mode "NATIVE" \
-            --bucket-name $OCI_BUCKET_NAME \
-            --name talos.oci \
-            --namespace $OCI_NAMESPACE
+        uses: oracle-actions/run-oci-cli-command@v1.3.2
+        with:
+          command: >-
+            oci compute image import from-object 
+              --compartment-id $OCI_COMPARTMENT_ID 
+              --display-name "Talos Linux ${TALOS_VERSION} ARM64" 
+              --os "Linux" 
+              --launch-mode "NATIVE" 
+              --bucket-name $OCI_BUCKET_NAME 
+              --name talos.oci 
+              --namespace $OCI_NAMESPACE
 
 
