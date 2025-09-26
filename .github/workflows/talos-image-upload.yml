@@ -29,8 +29,10 @@ jobs:
 
       - name: Test OCI CLI
         uses: oracle-actions/run-oci-cli-command@v1.3.2
+        id: test-oci-cli
         with:
           command: os ns get
+          silent: false
 
       - name: Install dependencies
         run: |
