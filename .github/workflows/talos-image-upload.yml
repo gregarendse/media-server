@@ -119,6 +119,6 @@ jobs:
         uses: oracle-actions/run-oci-cli-command@v1.3.2
         with:
           silent: false
-          command: compute image import from-object --from-json file://image-import.json
+          command: compute image import from-object --from-json file://image-import.json --debug
 
 
