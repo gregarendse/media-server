@@ -1,0 +1,105 @@
+name: Build and Upload Talos Image to Oracle Cloud
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-upload-talos-image:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+      OCI_REGION: ${{ secrets.OCI_REGION }}
+      OCI_COMPARTMENT_ID: ${{ secrets.OCI_COMPARTMENT_ID }}
+      OCI_BUCKET_NAME: ${{ secrets.OCI_BUCKET_NAME }}
+      OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
+      TALOS_VERSION: "v1.11.2"
+
+    steps:
+
+
+      - name: Configure OCI credentials (OIDC)
+        uses: oracle-actions/configure-oci-credentials@v1.2.2
+        with:
+          auth-type: "OIDC"
+          tenancy-ocid: ${{ secrets.OCI_TENANCY_OCID }}
+          region: ${{ secrets.OCI_REGION }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-utils unzip
+          curl -L https://github.com/oracle/oci-cli/releases/latest/download/oci-cli.zip -o oci-cli.zip
+          unzip oci-cli.zip
+          sudo bash install.sh --accept-all-defaults
+
+      - name: Download Talos ISO
+        run: |
+          curl -L https://factory.talos.dev/image/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba/${TALOS_VERSION}/oracle-amd64.raw.xz -o talos.raw.xz
+          cat > image_metadata.json <<'EOF'
+          {
+              "version": 2,
+              "externalLaunchOptions": {
+                  "firmware": "UEFI_64",
+                  "networkType": "PARAVIRTUALIZED",
+                  "bootVolumeType": "PARAVIRTUALIZED",
+                  "remoteDataVolumeType": "PARAVIRTUALIZED",
+                  "localDataVolumeType": "PARAVIRTUALIZED",
+                  "launchOptionsSource": "PARAVIRTUALIZED",
+                  "pvAttachmentVersion": 2,
+                  "pvEncryptionInTransitEnabled": true,
+                  "consistentVolumeNamingEnabled": true
+              },
+              "imageCapabilityData": null,
+              "imageCapsFormatVersion": null,
+              "operatingSystem": "Talos",
+              "operatingSystemVersion": "${TALOS_VERSION}",
+              "additionalMetadata": {
+                  "shapeCompatibilities": [
+                      {
+                          "internalShapeName": "VM.Standard.A1.Flex",
+                          "ocpuConstraints": null,
+                          "memoryConstraints": null
+                      }
+                  ]
+              }
+          }
+          EOF
+
+      - name: Extract the archive
+        run: |
+          xz --decompress talos.raw.xz
+
+      - name: Convert to QCOW2
+        run: |
+          qemu-img convert -f raw -O qcow2 talos.raw talos.qcow2
+      
+      - name: Create an archive with metadata
+        run: |
+          tar zcf talos.oci talos.qcow2 image_metadata.json
+
+      - name: Upload QCOW2 to Object Storage
+        run: |
+          oci os object put \
+            --bucket-name $OCI_BUCKET_NAME \
+            --name talos.oci \
+            --file talos.oci \
+            --namespace $OCI_NAMESPACE
+
+      - name: Import Custom Image to OCI
+        run: |
+          oci compute image import from-object \
+            --compartment-id $OCI_COMPARTMENT_ID \
+            --display-name "Talos Linux ${TALOS_VERSION} ARM64" \
+            --os "Linux" \
+            --launch-mode "NATIVE" \
+            --bucket-name $OCI_BUCKET_NAME \
+            --name talos.oci \
+            --namespace $OCI_NAMESPACE
+
+

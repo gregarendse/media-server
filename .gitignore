@@ -16,3 +16,9 @@
 
 secret.yml
 secret.yaml
+
+# Terraform files
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
