@@ -89,6 +89,7 @@ jobs:
       - name: Upload QCOW2 to Object Storage
         uses: oracle-actions/run-oci-cli-command@v1.3.2
         with:
+          silent: false
           command: >-
             os object put 
               --bucket-name $OCI_BUCKET_NAME 
@@ -99,6 +100,7 @@ jobs:
       - name: Import Custom Image to OCI
         uses: oracle-actions/run-oci-cli-command@v1.3.2
         with:
+          silent: false
           command: >-
             compute image import from-object 
               --compartment-id $OCI_COMPARTMENT_ID 
