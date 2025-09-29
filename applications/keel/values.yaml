@@ -8,6 +8,12 @@ service:
   type: ClusterIP
   externalPort: 9300
 
+# Basic auth on approvals
+basicauth:
+  enabled: true
+  user: "greg"
+  password: "123New789"
+
 # Keel self-update
 # uncomment lines below if you want Keel to automaticly
 # self-update to the latest release version
@@ -24,11 +30,6 @@ keel:
       tag: latest
 
 ingress:
-  enabled: true
-  labels: {}
-  annotations: {}
-#    kubernetes.io/ingress.class: nginx
-#    kubernetes.io/tls-acme: "true"
   hosts:
     - host: arendse.nom.za
       paths:

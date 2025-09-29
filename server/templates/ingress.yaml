@@ -12,6 +12,21 @@ metadata:
   {{- with $root.Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
+
+    {{- if not (hasKey . "kubernetes.io/ingress.class") }}
+    # Default to "public" ingress class if not specified
+    kubernetes.io/ingress.class: {{ $root.Values.ingress.className | default $root.Values.ingress.class | default "public" }}
+    {{- end }}
+    {{- if not (hasKey . "kubernetes.io/tls-acme") }}
+    # Default to enabling tls-acme if not specified
+    kubernetes.io/tls-acme: "true"
+    {{- end }}
+
+    {{- if and (not (hasKey . "cert-manager.io/cluster-issuer")) (or $root.Values.ingress.enableCertManager (and (index $root.Values.ingress.hosts 0) (index (index $root.Values.ingress.hosts 0) "tls")) ) }}
+    # Default to using letsencrypt-prod if not specified and tls is enabled on any host
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    {{- end }}
+
   {{- end }}
 spec:
 

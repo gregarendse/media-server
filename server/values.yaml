@@ -48,11 +48,13 @@ ports:
   #     target: 80
   #     protocol: TCP
 
-ingress:
+ingressClass: public
+
+ingress: {}
   # {}
-  # annotations: {}
-  #     kubernetes.io/ingress.class: public
-  #     kubernetes.io/tls-acme: "true"
+  # annotations: 
+      # kubernetes.io/ingress.class: public
+      # kubernetes.io/tls-acme: "true"
   # hosts:
   #   - host: chart.lan
   #     paths:

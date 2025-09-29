@@ -77,3 +77,25 @@ ports:
   #   target: 32414
   #   nodePort: 30414
   #   protocol: UDP
+
+ingress:
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: arendse.nom.za
+      tls: true
+      path: /plex
+      service:
+        name: plexmediaserver
+    - host: plex.arendse.nom.za
+      tls: true
+      path: /
+      service:
+        name: plexmediaserver
+    - host: arendse.ddns.net
+      tls: true
+      path: /plex
+      service:
+        name: plexmediaserver
+
