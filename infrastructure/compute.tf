@@ -12,7 +12,7 @@ variable "instance_count" {
 data "oci_core_images" "images" {
   compartment_id           = data.oci_identity_compartment.root.id
   operating_system         = "Canonical Ubuntu"
-  operating_system_version = "24.04"
+  operating_system_version = "24.04 Minimal"
   sort_by                  = "TIMECREATED"
   sort_order               = "DESC"
   shape                    = var.shape
@@ -22,7 +22,7 @@ data "oci_core_images" "images" {
 resource "oci_core_instance_configuration" "ubuntu" {
   compartment_id = oci_identity_compartment.homelab.id
   display_name   = "ubuntu"
-  freeform_tags   = merge(var.tags, {})
+  freeform_tags  = merge(var.tags, {})
 
   instance_details {
     instance_type = "compute"
@@ -44,7 +44,7 @@ resource "oci_core_instance_configuration" "ubuntu" {
       source_details {
         source_type             = "image"
         image_id                = data.oci_core_images.images.images[0].id
-        boot_volume_size_in_gbs = 200 / var.instance_count
+        boot_volume_size_in_gbs = 50
       }
 
       agent_config {
@@ -56,6 +56,11 @@ resource "oci_core_instance_configuration" "ubuntu" {
 
       metadata = {
         ssh_authorized_keys = file("~/.ssh/id_rsa_oci.pub")
+        user_data = base64encode(
+          templatefile("user-data/cloud-init.yaml", {
+            hostname = "ubuntu"
+          })
+        )
       }
     }
 
@@ -66,7 +71,7 @@ resource "oci_core_instance_pool" "ubuntu" {
   compartment_id = oci_identity_compartment.homelab.id
   display_name   = "ubuntu"
   size           = var.instance_count
-  freeform_tags   = merge(var.tags, {})
+  freeform_tags  = merge(var.tags, {})
 
   instance_configuration_id = oci_core_instance_configuration.ubuntu.id
 

@@ -3,14 +3,17 @@ image:
   repository: hashicorp/http-echo
 ingress:
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - host: kubernetes.arendse.nom.za
       path: /echo
+      tls: true
       service:
         name: http
     - host: echo.arendse.nom.za
       path: /
+      tls: true
       service:
         name: http
 ports:

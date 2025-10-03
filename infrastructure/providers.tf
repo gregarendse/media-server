@@ -10,6 +10,10 @@ terraform {
       source  = "hashicorp/null"
       version = ">= 3.2.3"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = ">= 0.22.0"
+    }
   }
 }
 
@@ -21,3 +25,7 @@ provider "oci" {
   region           = var.region
 }
 
+provider "tailscale" {
+  api_key = var.tailscale_api_key
+  tailnet = var.tailscale_tailnet
+}

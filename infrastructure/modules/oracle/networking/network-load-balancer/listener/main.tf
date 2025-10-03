@@ -57,24 +57,3 @@ resource "oci_network_load_balancer_listener" "listener" {
   ]
 }
 
-resource "oci_network_load_balancer_backend" "backend" {
-  for_each = {
-    for i in var.instances : i.display_name => i
-  }
-
-  network_load_balancer_id = var.load_balancer_id
-  backend_set_name         = var.name
-
-  target_id = each.value.id
-  port      = var.ports.target
-
-  timeouts {
-    create = "10m"
-    update = "10m"
-    delete = "10m"
-  }
-
-  depends_on = [
-    oci_network_load_balancer_backend_set.backend_set
-  ]
-}

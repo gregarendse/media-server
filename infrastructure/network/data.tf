@@ -50,4 +50,8 @@ data "oci_core_subnet" "private" {
 
 data "oci_core_instances" "instances" {
   compartment_id = data.oci_identity_compartment.homelab.id
+  filter {
+    name   = "state"
+    values = ["RUNNING"]
+  }
 }

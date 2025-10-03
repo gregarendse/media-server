@@ -19,7 +19,7 @@ locals {
       public   = true
       ports = {
         listener = 80
-        target   = 80
+        target   = 30080
       }
       health_check = {
         return_code = 404
@@ -34,7 +34,7 @@ locals {
       public   = true
       ports = {
         listener = 443
-        target   = 443
+        target   = 30443
       }
       health_check = {
         return_code = 404

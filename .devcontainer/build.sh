@@ -58,6 +58,10 @@ echo "deb [signed-by=${KEYRINGS}/hashicorp-archive-keyring.gpg] https://apt.rele
 # helps tools such as command-not-found to work correctly
 chmod 644 /etc/apt/sources.list.d/hashicorp.list
 
+# https://www.talos.dev/v1.11/talos-guides/install/talosctl/
+echo "Setting up talosctl"
+curl -fsSL https://talos.dev/install | sh
+
 echo "Setting up eza"
 curl -fsSL "https://raw.githubusercontent.com/eza-community/eza/main/deb.asc" | gpg --dearmor -o "${KEYRINGS}/gierens.gpg"
 chmod 644 /etc/apt/keyrings/gierens.gpg
@@ -82,7 +86,10 @@ rm -rf "go${GO_VERSION}.linux-amd64.tar.gz"
 export GOBIN=${GOROOT}/bin
 export PATH=${PATH}:${GOBIN}
 /usr/local/go/bin/go install github.com/k0sproject/k0sctl@latest
+# https://github.com/derailed/k9s
 /usr/local/go/bin/go install github.com/derailed/k9s@latest
+# https://github.com/mikefarah/yq
+go install github.com/mikefarah/yq/v4@latest
 
 echo "Setting up zoxide"
 ZOXIDE_TMP_DIR=$(mktemp -d)

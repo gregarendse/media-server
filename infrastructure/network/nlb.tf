@@ -30,20 +30,71 @@ resource "oci_network_load_balancer_network_load_balancer" "public" {
   freeform_tags = merge(var.tags, {})
 }
 
+resource "oci_network_load_balancer_backend_set" "backend_set" {
+  for_each = {
+    for port in local.ports : port.name => port
+    if port.public == true
+  }
+  # https://docs.oracle.com/en-us/iaas/api/#/en/networkloadbalancer/20200501/datatypes/UpdateBackendSetDetails
+  # https://docs.oracle.com/en-us/iaas/api/#/en/networkloadbalancer/20200501/BackendSet/CreateBackendSet
 
-module "listeners" {
-  source = "../modules/oracle/networking/network-load-balancer/listener"
+  name                     = each.value.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.public.id
+  policy                   = "FIVE_TUPLE"
+  is_preserve_source       = true
+  is_fail_open             = false
+  # ip_version                            = "IPV4"
+  # is_instant_failover_enabled           = false
+  # is_instant_failover_tcp_reset_enabled = true
 
+  dynamic "health_checker" {
+    for_each = each.value.health_check.protocol == "HTTP" || each.value.health_check.protocol == "HTTPS" ? [1] : []
+
+    content {
+      protocol    = each.value.health_check.protocol
+      return_code = each.value.health_check.return_code
+      url_path    = each.value.health_check.path
+      port        = each.value.ports.target
+    }
+
+  }
+
+  dynamic "health_checker" {
+    for_each = each.value.health_check.protocol == "TCP" ? [1] : []
+
+    content {
+      protocol = "TCP"
+    }
+
+  }
+
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
+}
+
+resource "oci_network_load_balancer_listener" "listener" {
   for_each = {
     for port in local.ports : port.name => port
     if port.public == true
   }
 
-  load_balancer_id = oci_network_load_balancer_network_load_balancer.public.id
+  default_backend_set_name = each.value.name
+  name                     = each.value.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.public.id
 
-  name         = each.value.name
-  protocol     = each.value.protocol
-  health_check = each.value.health_check
-  ports        = each.value.ports
-  instances    = data.oci_core_instances.instances.instances
+  port     = each.value.ports.listener
+  protocol = each.value.protocol
+
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
+
+  depends_on = [
+    oci_network_load_balancer_backend_set.backend_set
+  ]
 }

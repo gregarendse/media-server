@@ -74,3 +74,46 @@ variable "tags" {
     "project"     = "homelab"
   }
 }
+
+variable "shape" {
+  type = string
+  # default = "VM.Standard.E2.1.Micro"
+  default = "VM.Standard.A1.Flex"
+}
+
+variable "instance_count" {
+  type    = number
+  default = 2
+}
+
+#   Populated by environment variable TF_VAR_tailscale_api_key
+variable "tailscale_api_key" {
+  description = "Tailscale auth key"
+  type        = string
+
+  validation {
+    condition     = length(var.tailscale_api_key) > 0
+    error_message = "Tailscale API key must not be empty"
+  }
+}
+
+#   Populated by environment variable TF_VAR_tailscale_tailnet
+variable "tailscale_tailnet" {
+  description = "Tailscale tailnet name"
+  type        = string
+
+  validation {
+    condition     = length(var.tailscale_tailnet) > 0
+    error_message = "Tailscale tailnet must not be empty"
+  }
+}
+
+variable "public_key_path" {
+  description = "Path to public SSH key"
+  type        = string
+
+  validation {
+    condition     = can(file(var.public_key_path))
+    error_message = "Public key file not found"
+  }
+}
