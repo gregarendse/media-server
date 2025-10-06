@@ -33,7 +33,6 @@ resource "oci_network_load_balancer_network_load_balancer" "public" {
 resource "oci_network_load_balancer_backend_set" "backend_set" {
   for_each = {
     for port in local.ports : port.name => port
-    if port.public == true
   }
   # https://docs.oracle.com/en-us/iaas/api/#/en/networkloadbalancer/20200501/datatypes/UpdateBackendSetDetails
   # https://docs.oracle.com/en-us/iaas/api/#/en/networkloadbalancer/20200501/BackendSet/CreateBackendSet
@@ -64,8 +63,33 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
 
     content {
       protocol = "TCP"
+      port     = each.value.ports.target
     }
+  }
 
+  dynamic "health_checker" {
+    for_each = each.value.health_check.protocol == "UDP" ? [1] : []
+
+    content {
+      protocol      = "UDP"
+      port          = each.value.ports.target
+      request_data  = each.value.health_check.request_data
+      response_data = each.value.health_check.response_data
+    }
+  }
+
+  dynamic "health_checker" {
+    for_each = each.value.health_check.protocol == "DNS" ? [1] : []
+
+    content {
+      protocol           = "UDP"
+      request_data       = "AQAAAgAAABwAAAAAZXhhbXBsZQAuY29tAAEAAQ=="     # DNS query for example.com
+      response_data      = "AAABAAABAAAAAAABAAAAAABleGFtcGxlA2NvbQAAAQAB" # DNS response for example.com
+      port               = each.value.ports.target
+      interval_in_millis = 10000
+      timeout_in_millis  = 1000
+      retries            = 3
+    }
   }
 
   timeouts {
@@ -78,7 +102,6 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
 resource "oci_network_load_balancer_listener" "listener" {
   for_each = {
     for port in local.ports : port.name => port
-    if port.public == true
   }
 
   default_backend_set_name = each.value.name

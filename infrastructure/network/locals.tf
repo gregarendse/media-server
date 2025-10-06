@@ -23,7 +23,7 @@ locals {
       }
       health_check = {
         return_code = 404
-        path        = "/healthz"
+        path        = "/ping"
         protocol    = "HTTP"
       }
     },
@@ -38,7 +38,7 @@ locals {
       }
       health_check = {
         return_code = 404
-        path        = "/healthz"
+        path        = "/ping"
         protocol    = "HTTPS"
       }
     },
@@ -57,5 +57,40 @@ locals {
         return_code = 401
       }
     },
+    {
+      name     = "dns"
+      notes    = "Pi-hole DNS"
+      protocol = "UDP"
+      public   = true
+      ports = {
+        listener = 53
+        target   = 30053
+      }
+      health_check = {
+        protocol = "DNS"
+      }
+    },
+    # Not currently used
+    # {
+    #   name     = "dhcp-udp"
+    #   notes    = "DHCP for Pi-hole and other DHCP services"
+    #   protocol = "UDP"
+    #   public   = false
+    #   ports = {
+    #     listener = 67
+    #     target   = 30067
+    #   }
+    # },
+    # Not currently used
+    # {
+    #   name     = "ntp-udp"
+    #   notes    = "NTP for Pi-hole and other NTP services"
+    #   protocol = "UDP"
+    #   public   = false
+    #   ports = {
+    #     listener = 123
+    #     target   = 300123
+    #   }
+    # }
   ]
 }

@@ -104,7 +104,7 @@ resource "oci_network_load_balancer_backend" "backend" {
   backend_set_name         = each.value.name
 
   target_id = each.value.id
-  port      = each.value.port
+  port      = each.value.port == 6443 ? 6443 : format("3%04d", each.value.port)
 
   timeouts {
     create = "10m"

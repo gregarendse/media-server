@@ -27,7 +27,7 @@ resource "oci_core_security_list" "private" {
   dynamic "ingress_security_rules" {
     for_each = {
       for i in local.ports : i.name => i
-      if i.public == true
+      if i.public == true && i.protocol != "TCP/UDP"
     }
     iterator = port_rule
     content {
@@ -54,10 +54,81 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  dynamic "ingress_security_rules" {
+    for_each = {
+      for i in local.ports : i.name => i
+      if i.public == false && i.protocol != "TCP/UDP"
+    }
+    iterator = port_rule
+    content {
+      description = port_rule.value.notes
+      source      = data.oci_core_vcn.homelab.cidr_block
+      source_type = "CIDR_BLOCK"
+      protocol    = port_rule.value.protocol == "HTTPS" ? local.protocol_numbers.TCP : (port_rule.value.protocol == "TCP" ? local.protocol_numbers.TCP : local.protocol_numbers.UDP)
+
+      dynamic "tcp_options" {
+        for_each = port_rule.value.protocol == "TCP" || port_rule.value.protocol == "HTTPS" ? [1] : []
+        content {
+          min = port_rule.value.ports.target
+          max = port_rule.value.ports.target
+        }
+      }
+
+      dynamic "udp_options" {
+        for_each = port_rule.value.protocol == "UDP" ? [1] : []
+        content {
+          min = port_rule.value.ports.target
+          max = port_rule.value.ports.target
+        }
+      }
+    }
+  }
+
+  # Additional rules
+  ingress_security_rules {
+    description = "Ingress etcd client port"
+    stateless   = false
+    source      = local.subnet_private_cdir
+    protocol    = local.protocol_numbers.TCP
+    tcp_options {
+      min = 2379
+      max = 2379
+    }
+  }
+  ingress_security_rules {
+    description = "Ingress kube-apiserver"
+    stateless   = false
+    source      = local.subnet_private_cdir
+    protocol    = local.protocol_numbers.TCP
+    tcp_options {
+      min = 6443
+      max = 6443
+    }
+  }
+
+  ingress_security_rules {
+    description = "Pi-hole DNS"
+    stateless   = false
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    protocol    = local.protocol_numbers.UDP
+    udp_options {
+      min = 30053
+      max = 30053
+    }
+  }
+
   # Allow all VCN traffic
   ingress_security_rules {
     description = "Allow all VCN traffic"
     source      = data.oci_core_vcn.homelab.cidr_block
+    protocol    = "all"
+  }
+
+  # Allow all subnet traffic
+  ingress_security_rules {
+    description = "Allow all subnet traffic"
+    source      = local.subnet_private_cdir
     protocol    = "all"
   }
 

@@ -23,7 +23,7 @@ resource "oci_core_security_list" "public" {
   dynamic "ingress_security_rules" {
     for_each = {
       for i in local.ports : i.name => i
-      if i.public == true
+      if i.public == true && i.protocol != "TCP/UDP"
     }
     iterator = port_rule
 
@@ -35,7 +35,7 @@ resource "oci_core_security_list" "public" {
       source_type = "CIDR_BLOCK"
 
       dynamic "tcp_options" {
-        for_each = port_rule.value.protocol == "TCP" || port_rule.value.protocol == "HTTPS" ? [1] : []
+        for_each = contains(["TCP", "HTTP", "HTTPS"], port_rule.value.protocol) ? [1] : []
         content {
           min = port_rule.value.ports.listener
           max = port_rule.value.ports.listener
@@ -43,7 +43,7 @@ resource "oci_core_security_list" "public" {
       }
 
       dynamic "udp_options" {
-        for_each = port_rule.value.protocol == "UDP" ? [1] : []
+        for_each = contains(["UDP"], port_rule.value.protocol) ? [1] : []
         content {
           min = port_rule.value.ports.listener
           max = port_rule.value.ports.listener
@@ -52,6 +52,17 @@ resource "oci_core_security_list" "public" {
     }
   }
 
+  ingress_security_rules {
+    description = "Pi-hole DNS"
+    stateless   = false
+    source      = "0.0.0.0/0"
+    source_type = "CIDR_BLOCK"
+    protocol    = local.protocol_numbers.UDP
+    udp_options {
+      min = 53
+      max = 53
+    }
+  }
 
   ingress_security_rules {
     description = "Ingress ICMP Destination Unreachable"
