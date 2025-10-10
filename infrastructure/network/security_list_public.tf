@@ -23,7 +23,6 @@ resource "oci_core_security_list" "public" {
   dynamic "ingress_security_rules" {
     for_each = {
       for i in local.ports : i.name => i
-      if i.public == true && i.protocol != "TCP/UDP"
     }
     iterator = port_rule
 
@@ -31,7 +30,7 @@ resource "oci_core_security_list" "public" {
       # Allow inbound Kube API traffic from any source
       description = port_rule.value.notes
       protocol    = port_rule.value.protocol == "HTTPS" ? local.protocol_numbers.TCP : (port_rule.value.protocol == "TCP" ? local.protocol_numbers.TCP : local.protocol_numbers.UDP)
-      source      = "0.0.0.0/0"
+      source      = port_rule.value.public == true ? "0.0.0.0/0" : "192.168.1.0/24"
       source_type = "CIDR_BLOCK"
 
       dynamic "tcp_options" {
@@ -49,18 +48,6 @@ resource "oci_core_security_list" "public" {
           max = port_rule.value.ports.listener
         }
       }
-    }
-  }
-
-  ingress_security_rules {
-    description = "Pi-hole DNS"
-    stateless   = false
-    source      = "0.0.0.0/0"
-    source_type = "CIDR_BLOCK"
-    protocol    = local.protocol_numbers.UDP
-    udp_options {
-      min = 53
-      max = 53
     }
   }
 

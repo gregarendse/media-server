@@ -33,3 +33,15 @@ resource "cloudflare_dns_record" "pihole" {
   ttl     = 3600 # ttl must be set to 1 when proxied is true
   proxied = false
 }
+
+resource "cloudflare_dns_record" "unifi" {
+  zone_id = data.cloudflare_zone.zone.zone_id
+
+  name    = "unifi.${var.domain_name}"
+  comment = "Unifi Controller DNS record"
+  content = data.terraform_remote_state.network.outputs.public_id.ip_address
+
+  type    = "A"
+  ttl     = 3600 # ttl must be set to 1 when proxied is true
+  proxied = false
+}

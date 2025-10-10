@@ -57,17 +57,18 @@ resource "oci_core_security_list" "private" {
   dynamic "ingress_security_rules" {
     for_each = {
       for i in local.ports : i.name => i
-      if i.public == false && i.protocol != "TCP/UDP"
+      if i.public == false && contains(["TCP", "HTTP", "HTTPS", "UDP", "DNS"], i.protocol)
     }
     iterator = port_rule
     content {
       description = port_rule.value.notes
-      source      = data.oci_core_vcn.homelab.cidr_block
+      source      = "192.168.1.0/24"
       source_type = "CIDR_BLOCK"
-      protocol    = port_rule.value.protocol == "HTTPS" ? local.protocol_numbers.TCP : (port_rule.value.protocol == "TCP" ? local.protocol_numbers.TCP : local.protocol_numbers.UDP)
+      protocol    = local.protocol_numbers[port_rule.value.protocol] # == "HTTPS" ? local.protocol_numbers.TCP : (port_rule.value.protocol == "TCP" ? local.protocol_numbers.TCP : local.protocol_numbers.UDP)
 
       dynamic "tcp_options" {
-        for_each = port_rule.value.protocol == "TCP" || port_rule.value.protocol == "HTTPS" ? [1] : []
+        for_each = contains(["TCP", "HTTP", "HTTPS"], port_rule.value.protocol) ? [1] : []
+        # for_each = port_rule.value.protocol == "TCP" || port_rule.value.protocol == "HTTPS" ? [1] : []
         content {
           min = port_rule.value.ports.target
           max = port_rule.value.ports.target
@@ -75,7 +76,8 @@ resource "oci_core_security_list" "private" {
       }
 
       dynamic "udp_options" {
-        for_each = port_rule.value.protocol == "UDP" ? [1] : []
+        for_each = contains(["UDP", "DNS"], port_rule.value.protocol) ? [1] : []
+        # for_each = port_rule.value.protocol == "UDP" ? [1] : []
         content {
           min = port_rule.value.ports.target
           max = port_rule.value.ports.target

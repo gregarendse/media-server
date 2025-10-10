@@ -35,6 +35,7 @@ resource "oci_core_instance_configuration" "ubuntu" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes        = [instance_details[0].launch_details[0].metadata]
   }
 }
 
@@ -59,56 +60,4 @@ resource "oci_core_instance_pool" "ubuntu" {
   }
 }
 
-data "oci_core_instances" "instances" {
-  compartment_id = data.oci_identity_compartment.homelab.id
-  state          = "RUNNING"
-}
 
-data "terraform_remote_state" "network" {
-  backend = "s3" # or whatever backend you use
-  config = {
-    bucket = "gregarendse-terraform"
-    key    = "network/state.json"
-
-    # Using Backblaze B2 - these validations do not apply
-    skip_credentials_validation = true
-    skip_region_validation      = true
-    skip_requesting_account_id  = true
-    skip_s3_checksum            = true
-  }
-}
-
-locals {
-  backend_listeners = [for b_k, b_v in data.terraform_remote_state.network.outputs.backend_set : {
-    name = b_v.name
-    port = data.terraform_remote_state.network.outputs.listener[b_k].port
-  }]
-
-  instances = flatten([
-    for instance in data.oci_core_instances.instances.instances : [
-      for backend_listener in local.backend_listeners : {
-        id            = instance.id
-        instance_name = instance.display_name
-        port          = backend_listener.port
-        name          = backend_listener.name
-      }
-    ]
-  ])
-
-}
-
-resource "oci_network_load_balancer_backend" "backend" {
-  for_each = { for i in local.instances : "${i.instance_name}-${i.name}" => i }
-
-  network_load_balancer_id = data.terraform_remote_state.network.outputs.nlb.id
-  backend_set_name         = each.value.name
-
-  target_id = each.value.id
-  port      = each.value.port == 6443 ? 6443 : format("3%04d", each.value.port)
-
-  timeouts {
-    create = "10m"
-    update = "10m"
-    delete = "10m"
-  }
-}

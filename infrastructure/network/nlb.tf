@@ -41,7 +41,7 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.public.id
   policy                   = "FIVE_TUPLE"
   is_preserve_source       = true
-  is_fail_open             = false
+  is_fail_open             = each.value.protocol == "UDP" ? true : false
   # ip_version                            = "IPV4"
   # is_instant_failover_enabled           = false
   # is_instant_failover_tcp_reset_enabled = true
@@ -82,13 +82,13 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
     for_each = each.value.health_check.protocol == "DNS" ? [1] : []
 
     content {
-      protocol           = "UDP"
-      request_data       = "AQAAAgAAABwAAAAAZXhhbXBsZQAuY29tAAEAAQ=="     # DNS query for example.com
-      response_data      = "AAABAAABAAAAAAABAAAAAABleGFtcGxlA2NvbQAAAQAB" # DNS response for example.com
+      protocol = "DNS"
+      # request_data       = "AQAAAgAAABwAAAAAZXhhbXBsZQAuY29tAAEAAQ=="     # DNS query for example.com
+      # response_data      = "AAABAAABAAAAAAABAAAAAABleGFtcGxlA2NvbQAAAQAB" # DNS response for example.com
       port               = each.value.ports.target
-      interval_in_millis = 10000
-      timeout_in_millis  = 1000
-      retries            = 3
+      interval_in_millis = 100000
+      timeout_in_millis  = 10000
+      retries            = 1
     }
   }
 
@@ -120,4 +120,74 @@ resource "oci_network_load_balancer_listener" "listener" {
   depends_on = [
     oci_network_load_balancer_backend_set.backend_set
   ]
+}
+
+locals {
+  instances = flatten([
+    for instance in data.oci_core_instances.instances.instances : [
+      for port in local.ports : {
+        instance = instance
+        port     = port
+      }
+    ]
+  ])
+}
+
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-5-dns"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/dns/backends/ocid1.instance.oc1.uk-london-1.anwgiljti5e2auicl5oal4opxomf5laamsmre5j7q73djslah3zaf7h4gaza.30053"
+}
+
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-5-http"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/http/backends/ocid1.instance.oc1.uk-london-1.anwgiljti5e2auicl5oal4opxomf5laamsmre5j7q73djslah3zaf7h4gaza.30080"
+}
+
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-5-https"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/https/backends/ocid1.instance.oc1.uk-london-1.anwgiljti5e2auicl5oal4opxomf5laamsmre5j7q73djslah3zaf7h4gaza.30443"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-5-kube-apiserver"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/kube-apiserver/backends/ocid1.instance.oc1.uk-london-1.anwgiljti5e2auicl5oal4opxomf5laamsmre5j7q73djslah3zaf7h4gaza.6443"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-5-unifi-portal"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/unifi-portal/backends/ocid1.instance.oc1.uk-london-1.anwgiljti5e2auicl5oal4opxomf5laamsmre5j7q73djslah3zaf7h4gaza.30808"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-6-dns"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/dns/backends/ocid1.instance.oc1.uk-london-1.anwgiljsi5e2auicgg42szcckmowmt5d2wiiqzbzjxhqzczu3y5bte5k4slq.30053"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-6-http"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/http/backends/ocid1.instance.oc1.uk-london-1.anwgiljsi5e2auicgg42szcckmowmt5d2wiiqzbzjxhqzczu3y5bte5k4slq.30080"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-6-https"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/https/backends/ocid1.instance.oc1.uk-london-1.anwgiljsi5e2auicgg42szcckmowmt5d2wiiqzbzjxhqzczu3y5bte5k4slq.30443"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-6-kube-apiserver"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/kube-apiserver/backends/ocid1.instance.oc1.uk-london-1.anwgiljsi5e2auicgg42szcckmowmt5d2wiiqzbzjxhqzczu3y5bte5k4slq.6443"
+}
+import {
+  to = oci_network_load_balancer_backend.backend["ubuntu-6-unifi-portal"]
+  id = "networkLoadBalancers/ocid1.networkloadbalancer.oc1.uk-london-1.amaaaaaai5e2auiaqs4iexdw6aoiuaqnujizytdsgsp3pwuoxs44tieh5fbq/backendSets/unifi-portal/backends/ocid1.instance.oc1.uk-london-1.anwgiljsi5e2auicgg42szcckmowmt5d2wiiqzbzjxhqzczu3y5bte5k4slq.30808"
+}
+
+resource "oci_network_load_balancer_backend" "backend" {
+  for_each = { for i in local.instances : "${i.instance.display_name}-${i.port.name}" => i }
+
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.public.id
+  backend_set_name         = each.value.port.name
+
+  target_id = each.value.instance.id
+  port      = each.value.port.ports.target
+
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
 }

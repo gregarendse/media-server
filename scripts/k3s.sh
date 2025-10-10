@@ -211,3 +211,5 @@ helm install cilium cilium/cilium --version 1.18.2 \
    --namespace=kube-system \
    --set operator.replicas=1
 
+
+kubectl port-forward -n kube-system svc/cilium-operator 9090:9090 &

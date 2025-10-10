@@ -70,6 +70,74 @@ locals {
         protocol = "DNS"
       }
     },
+    # # Device and application communication
+    # { name = "portal"; port = 8080; targetPort = "portal"; protocol = "TCP"; nodePort = 30808;}
+    {
+      name     = "unifi-portal"
+      notes    = "Device and application communication"
+      protocol = "TCP"
+      public   = false
+      ports = {
+        listener = 8080
+        target   = 30808
+      }
+      health_check = {
+        protocol = "TCP"
+      }
+    },
+    # STUN for device adoption and communication (also required for Remote Management)
+    # { name = "stun"; port = 3478; targetPort = "stun"; protocol = "UDP"; nodePort = 30478;}
+    {
+      name     = "unifi-stun"
+      notes    = "STUN for device adoption and communication (also required for Remote Management)"
+      protocol = "UDP"
+      public   = false
+      ports = {
+        listener = 3478
+        target   = 30478
+      }
+      health_check = {
+        protocol      = "UDP"
+        request_data  = "ABCD" # Placeholder, replace with actual STUN request data
+        response_data = "ABCD" # Placeholder, replace with actual STUN response data
+      }
+    },
+    # # Device discovery during adoption
+    # { name = "discovery"; port = 10001; targetPort = "discovery"; protocol = "UDP"; nodePort = 31001;}
+    {
+      name     = "unifi-discovery"
+      notes    = "Device discovery during adoption"
+      protocol = "UDP"
+      public   = false
+      ports = {
+        listener = 10001
+        target   = 31001
+      }
+      health_check = {
+        protocol      = "UDP"
+        request_data  = "ABCD" # Placeholder, replace with actual discovery request data
+        response_data = "ABCD" # Placeholder, replace with actual discovery response data
+      }
+    },
+    # # L2 discovery (“Make application discoverable on L2 network”)
+    # { name = "mdns"; port = 1900; targetPort = "mdns"; protocol = "UDP"; nodePort = 31900;}
+    {
+      name     = "unifi-mdns"
+      notes    = "L2 discovery (“Make application discoverable on L2 network”)"
+      protocol = "UDP"
+      public   = false
+      ports = {
+        listener = 1900
+        target   = 31900
+      }
+      health_check = {
+        protocol      = "UDP"
+        request_data  = "ABCD" # Placeholder, replace with actual mDNS request data
+        response_data = "ABCD" # Placeholder, replace with actual mDNS response data
+      }
+    }
+    # # UniFi mobile speed test
+    # { name = "speedtest"; port = 6789; targetPort = "speedtest"; protocol = "TCP"; nodePort = 30678;}
     # Not currently used
     # {
     #   name     = "dhcp-udp"
